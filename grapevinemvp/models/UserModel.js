@@ -1,22 +1,20 @@
-import User from './User.js';
+import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-class UserModel {
-    static async register(name, email, password) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ name, email, password: hashedPassword });
-        await user.save();
-        return user;
-    }
+const UserSchema = new mongoose.Schema({
+  name: String,
+  email: { type: String, unique: true },
+  password: String,
+});
 
-    static async authenticate(email, password) {
-        const user = await User.findOne({ email });
-        if (user) {
-            const isMatch = await bcrypt.compare(password, user.password);
-            return isMatch ? user : null;
-        }
-        return null;
-    }
-}
+UserSchema.statics.authenticate = async function(email, password) {
+  const user = await this.findOne({ email });
+  if (user && await bcrypt.compare(password, user.password)) {
+    return user;
+  }
+  return null;
+};
 
-export default UserModel;
+const User = mongoose.models.User || mongoose.model('User', UserSchema);
+
+export default User;

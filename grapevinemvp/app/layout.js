@@ -1,14 +1,13 @@
 import './globals.css'
-import Navbar from './components/Navbar'
 import { SessionProvider } from "next-auth/react"
-import { authConfig } from '../auth.config';
+import Navbar from './components/Navbar'
 
 export const metadata = {
   title: 'Passion Project Network',
   description: 'Connect and collaborate on passion projects',
 }
 
-export default async function RootLayout({ children }) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>

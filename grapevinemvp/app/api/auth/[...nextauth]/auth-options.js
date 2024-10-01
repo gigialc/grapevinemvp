@@ -1,11 +1,8 @@
 import Credentials from 'next-auth/providers/credentials';
-import { connectDB } from './mongodb';
-import UserModel from './models/UserModel';
+import { connectDB } from '@/mongodb';
+import User from '@/models/UserModel';
 
-export const authConfig = {
-  pages: {
-    signIn: '/login',
-  },
+export const authOptions = {
   providers: [
     Credentials({
       name: 'Credentials',
@@ -20,13 +17,11 @@ export const authConfig = {
           return null;
         }
 
-        const user = await UserModel.authenticate(credentials.email, credentials.password);
-
-        if (user) {
+        const user = await User.findOne({ email: credentials.email });
+        if (user && await user.comparePassword(credentials.password)) {
           return { id: user._id, email: user.email, name: user.name };
-        } else {
-          return null;
         }
+        return null;
       }
     }),
   ],
@@ -42,4 +37,8 @@ export const authConfig = {
       return session;
     },
   },
-};
+  pages: {
+    signIn: '/login',
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+}
