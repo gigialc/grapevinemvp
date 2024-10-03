@@ -3,6 +3,7 @@
 import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -11,16 +12,19 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log('Attempting sign in with:', { email, password: '****' })
     const result = await signIn('credentials', {
       redirect: false,
       email,
       password,
     })
+    console.log('Sign in result:', result)
     if (result.ok) {
-      router.push('/')
+      console.log('Sign in successful, redirecting...')
+      router.push('/profile')
     } else {
-      // Handle errors
-      console.error('Login failed')
+      console.error('Login failed:', result.error)
+      // Add user-facing error message here
     }
   }
 
@@ -80,6 +84,15 @@ export default function Login() {
             </button>
           </div>
         </form>
+        {/* Sign-up button */}
+        <div className="text-center">
+          <p className="mt-2 text-sm text-purple-600">
+            Don't have an account?{' '}
+            <Link href="/signup" className="font-medium text-purple-600 hover:text-purple-500">
+              Sign up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )

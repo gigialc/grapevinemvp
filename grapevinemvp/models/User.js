@@ -3,8 +3,42 @@ import mongoose from 'mongoose';
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  profileImage: { type: String, default: 'https://via.placeholder.com/150' },
+  bio: { type: String, maxlength: 500 },
+  location: { type: String },
+  website: { type: String },
+  skills: [{ type: String }],
+  experience: [{
+    title: { type: String },
+    company: { type: String },
+    location: { type: String },
+    from: { type: Date },
+    to: { type: Date },
+    current: { type: Boolean, default: false },
+    description: { type: String }
+  }],
+  education: [{
+    school: { type: String },
+    degree: { type: String },
+    fieldOfStudy: { type: String },
+    from: { type: Date },
+    to: { type: Date },
+    current: { type: Boolean, default: false },
+    description: { type: String }
+  }],
+  socialLinks: {
+    linkedin: { type: String },
+    github: { type: String },
+    twitter: { type: String }
+  },
+  projects: [{
+    title: { type: String },
+    description: { type: String },
+    link: { type: String },
+    image: { type: String }
+  }],
+  interests: [{ type: String }]
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);
-

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
+import Link from 'next/link'
 
 export default function SignUp() {
   const [name, setName] = useState('')
@@ -124,6 +125,16 @@ export default function SignUp() {
             </button>
           </div>
         </form>
+
+         {/* Go back to login button */}
+         <div className="text-center">
+          <p className="mt-2 text-sm text-purple-600">
+            Already have an account?{' '}
+            <Link href="/login" className="font-medium text-purple-600 hover:text-purple-500">
+              Go back to login
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )
