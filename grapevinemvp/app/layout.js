@@ -2,20 +2,15 @@ import './globals.css'
 import { SessionProvider } from "next-auth/react"
 import Navbar from './components/Navbar'
 
-export const metadata = {
-  title: 'Passion Project Network',
-  description: 'Connect and collaborate on passion projects',
-}
+// app/layout.js
+import { Providers } from "./providers";
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html>
       <body>
-        <SessionProvider>
-          <Navbar />
-          {children}
-        </SessionProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
-  )
+  );
 }

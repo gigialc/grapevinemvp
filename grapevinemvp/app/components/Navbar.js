@@ -31,9 +31,9 @@ const Navbar = () => {
 
         {/* Desktop menu */}
         <div className="hidden md:flex items-center">
-          <Link href="/projects" className="mr-4 hover:text-purple-200">
+          {/* <Link href="/projects" className="mr-4 hover:text-purple-200">
             Discover
-          </Link>
+          </Link> */}
           {status === "authenticated" ? (
             <>
               <Link href="/profile" className="mr-4 hover:text-purple-200">
@@ -50,13 +50,13 @@ const Navbar = () => {
             <>
               <Link 
                 href="/login" 
-                className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-4 rounded mr-2"
               >
                 Sign in
               </Link>
               <Link 
                 href="/signup" 
-                className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded"
+                className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-1 px-4 rounded"
               >
                 Sign up
               </Link>
@@ -68,9 +68,9 @@ const Navbar = () => {
       {/* Mobile menu */}
       {isMenuOpen && (
         <div className="md:hidden mt-4">
-          <Link href="/projects" className="block py-2 hover:text-purple-200">
+          {/* <Link href="/projects" className="block py-2 hover:text-purple-200">
             Discover
-          </Link>
+          </Link> */}
           {status === "authenticated" ? (
             <>
               <Link href="/profile" className="block py-2 hover:text-purple-200">

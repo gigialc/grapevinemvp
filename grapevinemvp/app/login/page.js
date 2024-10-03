@@ -29,7 +29,7 @@ export default function Login() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-purple-900">
-            Sign in to Grapevine
+            Sign in to Grapevine 🍇
           </h2>
           <p className="mt-2 text-center text-sm text-purple-600">
             Connect and collaborate on passion projects

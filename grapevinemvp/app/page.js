@@ -1,8 +1,11 @@
 import ProjectCard from './components/ProjectCard'
+import Navbar from './components/Navbar'
 
 export default function Home() {
   return (
     <main className="container mx-auto px-4">
+      <Navbar />
+      
       {/* <h1 className="text-4xl font-bold my-8">Discover Projects</h1> */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <ProjectCard 
