@@ -56,7 +56,7 @@ export default function Profile() {
                 <div className=" p-4 sticky top-0 z-10">
                     <div className="flex items-center">
                         <img 
-                            src={user.profileImage || 'https://via.placeholder.com/150'} 
+                            src={user.profileImage || '/images/default-avatar.png'}
                             alt={user.name} 
                             className="w-20 h-20 rounded-full border-4 border-white mr-4"
                         />
@@ -86,6 +86,12 @@ export default function Profile() {
                         </section> */}
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-2 flex items-center">
+                                Interests
+                            </h2>
+                            <p className="text-gray-700">{user.interests.join(', ')}</p>
+                        </section>
+                        <section className="mb-6">
+                            <h2 className="text-xl font-semibold mb-2 flex items-center">
                                 {/* <FontAwesomeIcon icon={faTools} className="mr-2" /> Skills */}
                                 Skills
                             </h2>
@@ -97,7 +103,13 @@ export default function Profile() {
                                     </span>
                                 ))}
                             </div>
+                            
                         </section>
+                        <section className="mb-6">
+                            <h2 className="text-xl font-semibold mb-2">School</h2>
+                        <p className="text-black opacity-75">{user.education}</p>
+                        </section>
+
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-2">Contact</h2>
                             <p className="text-gray-600 mb-2">{user.email}</p>
@@ -110,7 +122,7 @@ export default function Profile() {
                                 <div className="flex space-x-4">
                                     {user.socialLinks.linkedin && <a href={user.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">LinkedIn</a>}
                                     {user.socialLinks.github && <a href={user.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-gray-800 hover:text-black">GitHub</a>}
-                                    {user.socialLinks.twitter && <a href={user.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-600">Twitter</a>}
+                                    {/* {user.socialLinks.twitter && <a href={user.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-600">Twitter</a>} */}
                                 </div>
                             </section>
                         )}
@@ -118,9 +130,9 @@ export default function Profile() {
                     <div className="md:w-2/3">
                         <Tabs>
                             <TabList>
-                                <Tab><FontAwesomeIcon icon={faBriefcase} className="mr-2" /> Experience</Tab>
+                                <Tab><FontAwesomeIcon icon={faBriefcase} className="mr-2" /> Past Projects</Tab>
                                 {/* <Tab><FontAwesomeIcon icon={faGraduationCap} className="mr-2" /> Education</Tab> */}
-                                <Tab><FontAwesomeIcon icon={faProjectDiagram} className="mr-2" /> Projects</Tab>
+                                <Tab><FontAwesomeIcon icon={faProjectDiagram} className="mr-2" /> Current Projects</Tab>
                             </TabList>
 
                             <TabPanel>
@@ -133,18 +145,10 @@ export default function Profile() {
                                         <p className="text-gray-700 mt-2">{exp.description}</p>
                                     </div>
                                 ))}
-                            </TabPanel>
+                            </TabPanel> 
 
-                            <TabPanel>
-                                {user.education && user.education.map((edu, index) => (
-                                    <div key={index} className="mb-4 border-b border-gray-200 pb-4">
-                                        <h3 className="text-lg font-semibold">{edu.school}</h3>
-                                        <p className="text-gray-600">{edu.degree} in {edu.fieldOfStudy}</p>
-                                        <p className="text-gray-600">{new Date(edu.from).toLocaleDateString()} - {edu.current ? 'Present' : new Date(edu.to).toLocaleDateString()}</p>
-                                        <p className="text-gray-700 mt-2">{edu.description}</p>
-                                    </div>
-                                ))}
-                            </TabPanel>
+                            {/* education string */}
+                  
 
                             <TabPanel>
                                 {user.projects && user.projects.map((project, index) => (

@@ -9,15 +9,7 @@ const UserSchema = new mongoose.Schema({
   location: { type: String },
   website: { type: String },
   skills: [{ type: String }],
-  education: [{
-    school: { type: String },
-    degree: { type: String },
-    fieldOfStudy: { type: String },
-    from: { type: Date },
-    to: { type: Date },
-    current: { type: Boolean, default: false },
-    description: { type: String }
-  }],
+  education: [{ type: String }],
   socialLinks: {
     linkedin: { type: String },
     github: { type: String },
@@ -29,6 +21,7 @@ const UserSchema = new mongoose.Schema({
     link: { type: String },
     image: { type: String }
   }],
+  projectInterest: { type: String },
   interests: [{ type: String }]
 }, { timestamps: true });
 

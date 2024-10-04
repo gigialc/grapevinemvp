@@ -15,19 +15,11 @@ export default function SignUp() {
   const [location, setLocation] = useState('')
   const [website, setWebsite] = useState('')
   const [skills, setSkills] = useState([''])
-  const [education, setEducation] = useState([{
-    school: '',
-    degree: '',
-    fieldOfStudy: '',
-    from: '',
-    to: '',
-    current: false,
-    description: ''
-  }])
+  const [education, setEducation] = useState('')
   const [socialLinks, setSocialLinks] = useState({
     linkedin: '',
     github: '',
-    twitter: ''
+    // twitter: ''
   })
   const [projects, setProjects] = useState([{
     title: '',
@@ -35,6 +27,7 @@ export default function SignUp() {
     link: '',
     image: ''
   }])
+  const [projectInterest, setProjectInterest] = useState('')
   const [interests, setInterests] = useState([''])
   const router = useRouter()
 
@@ -82,6 +75,7 @@ export default function SignUp() {
           education,
           socialLinks,
           projects,
+          projectInterest,
           interests: interests.filter(interest => interest.trim() !== '')
         };
   
@@ -209,6 +203,7 @@ export default function SignUp() {
                   id="bio"
                   name="bio"
                   rows="3"
+                  required
                   className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
                   placeholder="Tell us about yourself"
                   value={bio}
@@ -216,15 +211,28 @@ export default function SignUp() {
                 ></textarea>
               </div>
               <div>
-                <label htmlFor="location" className="block text-sm font-medium text-purple-700">Location</label>
+                <label htmlFor="projectInterest" className="block text-sm font-medium text-purple-700">Project Interest</label>
                 <input
                   type="text"
-                  id="location"
-                  name="location"
+                  id="projectInterest"
+                  name="projectInterest"
+                  required
                   className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                  placeholder="Your location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="What projects are you interested in?"
+                  value={projectInterest}
+                  onChange={(e) => setProjectInterest(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="education" className="block text-sm font-medium text-purple-700">School</label>
+                <input
+                  type="text"
+                  id="education"
+                  name="education"
+                  className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                  placeholder="Your education"
+                  value={education}
+                  onChange={(e) => setEducation(e.target.value)}
                 />
               </div>
               <div>
@@ -245,6 +253,7 @@ export default function SignUp() {
                   <input
                     key={index}
                     type="text"
+                    required
                     className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
                     placeholder="Enter a skill"
                     value={skill}
@@ -271,13 +280,13 @@ export default function SignUp() {
                   onChange={(e) => setSocialLinks({...socialLinks, github: e.target.value})}
                   className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
                 />
-                <input
+                {/* <input
                   type="url"
                   placeholder="Twitter"
                   value={socialLinks.twitter}
                   onChange={(e) => setSocialLinks({...socialLinks, twitter: e.target.value})}
                   className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                />
+                /> */}
               </div>
               <div>
                 <label className="block text-sm font-medium text-purple-700">Interests</label>
@@ -285,6 +294,7 @@ export default function SignUp() {
                   <input
                     key={index}
                     type="text"
+                    required
                     className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
                     placeholder="Enter an interest"
                     value={interest}
@@ -296,7 +306,7 @@ export default function SignUp() {
                 </button>
               </div>
 
-              {/* Projects */}
+              {/* Projects
                 <div>
                 <label className="block text-sm font-medium text-purple-700">Projects</label>
                 {projects.map((project, index) => (
@@ -354,7 +364,7 @@ export default function SignUp() {
                 >
                     Add Project
                 </button>
-                </div>
+                </div> */}
             </div>
 
           )}

@@ -130,20 +130,13 @@ export default function EditProfile() {
                 {/* Education */}
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">Education</label>
-                    {user.education.map((edu, index) => (
+                    {user.education.map((education, index) => (
                         <div key={index} className="mb-2">
                             <input
                                 type="text"
                                 placeholder="School"
-                                value={edu.school}
+                                value={education.school}
                                 onChange={(e) => handleEducationChange(index, 'school', e.target.value)}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Degree"
-                                value={edu.degree}
-                                onChange={(e) => handleEducationChange(index, 'degree', e.target.value)}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                             />
                             {/* Add more fields for education */}
@@ -153,6 +146,7 @@ export default function EditProfile() {
                         Add Education
                     </button>
                 </div>
+                
 
                 {/* Social Links */}
                 <div className="mb-4">
