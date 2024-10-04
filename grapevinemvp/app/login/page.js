@@ -12,23 +12,21 @@ export default function Login() {
   const router = useRouter()
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('') // Clear any existing errors
-    console.log('Attempting sign in with:', { email, password: '****' })
+    e.preventDefault();
+    setError('');
+
     const result = await signIn('credentials', {
       redirect: false,
       email,
       password,
-    })
-    console.log('Sign in result:', result)
-    if (result.ok) {
-      console.log('Sign in successful, redirecting...')
-      router.push('/profile')
+    });
+
+    if (result.error) {
+      setError(result.error);
     } else {
-      console.error('Login failed:', result.error)
-      setError('Invalid email or password. Please try again.') // Set error message
+      router.push('/explore'); // Redirect to profile page on successful login
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-purple-50 py-12 px-4 sm:px-6 lg:px-8">

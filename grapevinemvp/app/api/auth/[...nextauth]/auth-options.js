@@ -8,16 +8,16 @@ export const authOptions = {
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        username: { label: "Username", type: "text" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
         await connectDB();
         
-        const user = await User.findOne({ username: credentials.username });
+        const user = await User.findOne({ email: credentials.email });
         
         if (user && await compare(credentials.password, user.password)) {
-          return { id: user._id.toString(), name: user.username, email: user.email };
+          return { id: user._id.toString(), name: user.name, email: user.email };
         }
         
         return null;
@@ -25,21 +25,25 @@ export const authOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
+        token.email = user.email;
+      }
+      if (account) {
+        token.accessToken = account.access_token;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token?.id) {
-        session.user.id = token.id;
-      }
+      session.user.id = token.id;
+      session.user.email = token.email;
+      session.accessToken = token.accessToken;
       return session;
-    }
+    },
   },
   pages: {
     signIn: '/login',
   },
-  
+  secret: process.env.NEXTAUTH_SECRET,
 };

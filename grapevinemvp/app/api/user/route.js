@@ -7,19 +7,29 @@ export async function GET(request) {
     await connectDB();
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
+    const currentUserEmail = searchParams.get('currentUserEmail');
 
-    if (!email) {
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    // Case 1: Fetch a specific user by email
+    if (email) {
+      const user = await User.findOne({ email }).select('-password');
+      if (!user) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+      return NextResponse.json(user);
     }
 
-    const user = await User.findOne({ email }).select('-password');
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    // Case 2: Fetch all users except the current user
+    if (currentUserEmail) {
+      const users = await User.find({ email: { $ne: currentUserEmail } }).select('-password');
+      return NextResponse.json(users);
     }
 
-    return NextResponse.json(user);
+    // Case 3: Fetch all users if no email or currentUserEmail is provided
+    const allUsers = await User.find().select('-password');
+    return NextResponse.json(allUsers);
+
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error('Error fetching user(s):', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

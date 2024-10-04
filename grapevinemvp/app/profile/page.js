@@ -13,27 +13,31 @@ import { faUserCircle, faTools, faBriefcase, faGraduationCap, faProjectDiagram }
 export default function Profile() {
     const { data: session, status } = useSession();
     const [user, setUser] = useState(null);
-    const router = useRouter();
-
+  
     useEffect(() => {
+        console.log("Session:", session);
         if (session?.user?.email) {
-            fetchUserData(session.user.email);
+          fetchUserData(session.user.email);
         }
-    }, [session]);
-
-    const fetchUserData = async (email) => {
+      }, [session]);
+  
+      const fetchUserData = async (email) => {
+        console.log("Fetching user data for email:", email);
         try {
-            const response = await fetch(`/api/user?email=${email}`);
-            if (response.ok) {
-                const userData = await response.json();
-                setUser(userData);
-            } else {
-                console.error('Failed to fetch user data');
-            }
+          const response = await fetch(`/api/user?email=${email}`);
+          console.log("API response status:", response.status);
+          if (response.ok) {
+            const userData = await response.json();
+            console.log("Fetched user data:", userData);
+            setUser(userData);
+          } else {
+            console.error('Failed to fetch user data');
+          }
         } catch (error) {
-            console.error('Error fetching user data:', error);
+          console.error('Error fetching user data:', error);
         }
-    };
+      };
+  
 
     if (status === 'loading') {
         return <div>Loading...</div>;
