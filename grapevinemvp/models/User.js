@@ -9,15 +9,6 @@ const UserSchema = new mongoose.Schema({
   location: { type: String },
   website: { type: String },
   skills: [{ type: String }],
-  experience: [{
-    title: { type: String },
-    company: { type: String },
-    location: { type: String },
-    from: { type: Date },
-    to: { type: Date },
-    current: { type: Boolean, default: false },
-    description: { type: String }
-  }],
   education: [{
     school: { type: String },
     degree: { type: String },

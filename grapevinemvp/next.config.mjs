@@ -1,4 +1,10 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
 
-export default nextConfig;
+const nextConfig = {
+    env: {
+      NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+      NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: 'user_uploads',
+    },
+  };
+  
+  export default nextConfig;

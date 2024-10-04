@@ -15,7 +15,7 @@ const Navbar = () => {
   return (
     <nav className="text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold">
+        <Link href="" className="text-2xl font-bold">
           Grapevine 🍇
         </Link>
         
@@ -24,7 +24,7 @@ const Navbar = () => {
           className="md:hidden"
           onClick={toggleMenu}
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg className="w-6 h-6" fill="none" stroke="black" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
@@ -39,9 +39,12 @@ const Navbar = () => {
               <Link href="/profile" className="mr-4 hover:text-purple-200">
                 Profile
               </Link>
+              <Link href="/explore" className="mr-4 hover:text-purple-200">
+                Explore
+              </Link>
               <button 
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded"
+                className=" text-gray-600 font-bold py-2 px-4 rounded"
               >
                 Sign out
               </button>
@@ -76,12 +79,16 @@ const Navbar = () => {
               <Link href="/profile" className="block py-2 hover:text-purple-200">
                 Profile
               </Link>
+              <Link href="/explore" className="block py-2 hover:text-purple-200">
+                Explore
+              </Link>
               <button 
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="block w-full text-left py-2 hover:text-purple-200"
+                className="block w-full text-left py-2 hover:text-purple-200 text-purple-600"
               >
                 Sign out
               </button>
+              
             </>
           ) : (
             <>

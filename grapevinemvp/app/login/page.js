@@ -8,10 +8,12 @@ import Link from 'next/link'
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('') // New state for error message
   const router = useRouter()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('') // Clear any existing errors
     console.log('Attempting sign in with:', { email, password: '****' })
     const result = await signIn('credentials', {
       redirect: false,
@@ -24,7 +26,7 @@ export default function Login() {
       router.push('/profile')
     } else {
       console.error('Login failed:', result.error)
-      // Add user-facing error message here
+      setError('Invalid email or password. Please try again.') // Set error message
     }
   }
 
@@ -40,6 +42,20 @@ export default function Login() {
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && ( // Conditional rendering of error message
+            <div className="rounded-md bg-red-50 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  {/* You can add an error icon here if you want */}
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">
+                    {error}
+                  </h3>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email-address" className="sr-only">

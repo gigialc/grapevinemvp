@@ -1,26 +1,63 @@
-import { NextResponse } from 'next/server';
 import { connectDB } from '@/mongodb';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Now you can use cloudinary.uploader.upload() or other Cloudinary functions
 
 export async function POST(request) {
   try {
     await connectDB();
-    const { name, email, password } = await request.json();
-    console.log('Received signup data:', { name, email, password: '***' });
 
+    
+    
+    const body = await request.json();
+    const { name, email, password, profileImage, bio, location, website, skills, education, socialLinks, projects, interests } = body;
+    
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json({ error: 'User already exists' }, { status: 400 });
+      return new Response(JSON.stringify({ error: 'User already exists' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = new User({ name, email, password: hashedPassword });
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      profileImage, // This is now the Cloudinary URL
+      bio,
+      location,
+      website,
+      skills,
+      education,
+      socialLinks,
+      projects,
+      interests
+    });
+    
     await newUser.save();
-
-    return NextResponse.json({ message: 'User created successfully' }, { status: 201 });
+    
+    return new Response(JSON.stringify({ message: 'User created successfully' }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error('Signup error:', error);
-    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
+    return new Response(JSON.stringify({ error: 'Error creating user' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }

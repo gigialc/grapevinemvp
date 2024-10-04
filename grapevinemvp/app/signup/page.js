@@ -6,35 +6,102 @@ import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 
 export default function SignUp() {
+  const [step, setStep] = useState(1)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [profileImage, setProfileImage] = useState('')
+  const [bio, setBio] = useState('')
+  const [location, setLocation] = useState('')
+  const [website, setWebsite] = useState('')
+  const [skills, setSkills] = useState([''])
+  const [education, setEducation] = useState([{
+    school: '',
+    degree: '',
+    fieldOfStudy: '',
+    from: '',
+    to: '',
+    current: false,
+    description: ''
+  }])
+  const [socialLinks, setSocialLinks] = useState({
+    linkedin: '',
+    github: '',
+    twitter: ''
+  })
+  const [projects, setProjects] = useState([{
+    title: '',
+    description: '',
+    link: '',
+    image: ''
+  }])
+  const [interests, setInterests] = useState([''])
   const router = useRouter()
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+  
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setProfileImage(data.secure_url);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Signup submitted', { name, email, password });
+    if (step === 1) {
+      setStep(2);
+      return;
+    }
     
     try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
+        const userData = {
+          name,
+          email,
+          password,
+          profileImage, // Changed from profileImageUrl to profileImage
+          bio,
+          location,
+          website,
+          skills: skills.filter(skill => skill.trim() !== ''),
+          education,
+          socialLinks,
+          projects,
+          interests: interests.filter(interest => interest.trim() !== '')
+        };
+  
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(userData),
+        });
   
       if (!response.ok) {
         const errorData = await response.text();
         console.error('Signup failed:', response.status, errorData);
-        // Handle error (e.g., show error message to user)
         return;
       }
   
       const data = await response.json();
       console.log('Signup successful', data);
   
-      // Proceed with sign in
       const signInResult = await signIn('credentials', {
         email,
         password,
@@ -42,23 +109,31 @@ export default function SignUp() {
       });
   
       if (signInResult?.ok) {
-        router.push('/');
+        router.push('/profile');
       } else {
         console.error('Sign in failed after registration', signInResult);
       }
     } catch (error) {
       console.error('Error during signup:', error);
-      // Handle network errors or other exceptions
     }
   }
 
+  const addField = (setter, array) => {
+    setter([...array, '']);
+  }
+
+  const updateField = (setter, array, index, value) => {
+    const newArray = [...array];
+    newArray[index] = value;
+    setter(newArray);
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-purple-900">
-            Sign up for Grapevine 🍇
+            {step === 1 ? "Sign up for Grapevine 🍇" : "Complete Your Profile"}
           </h2>
           <p className="mt-2 text-center text-sm text-purple-600">
             Connect and collaborate on passion projects
@@ -66,75 +141,242 @@ export default function SignUp() {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" value="true" />
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="name" className="sr-only">
-                Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-purple-300 placeholder-purple-500 text-purple-900 rounded-t-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+          {step === 1 ? (
+            <div className="rounded-md shadow-sm -space-y-px">
+              <div>
+                <label htmlFor="name" className="sr-only">Name</label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-purple-300 placeholder-purple-500 text-purple-900 rounded-t-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="email-address" className="sr-only">Email address</label>
+                <input
+                  id="email-address"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-purple-300 placeholder-purple-500 text-purple-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="sr-only">Password</label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-purple-300 placeholder-purple-500 text-purple-900 rounded-b-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
             </div>
-            <div>
-              <label htmlFor="email-address" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-purple-300 placeholder-purple-500 text-purple-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-purple-300 placeholder-purple-500 text-purple-900 rounded-b-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <div>
+                <label htmlFor="profileImage" className="block text-sm font-medium text-purple-700">Profile Image</label>
+                <input
+                    type="file"
+                    id="profileImage"
+                    onChange={handleImageUpload}
+                    className="mt-1 block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-purple-50 file:text-purple-700
+                    hover:file:bg-purple-100"
+                />
+                </div>
+                </div>
+              <div>
+                <label htmlFor="bio" className="block text-sm font-medium text-purple-700">Bio</label>
+                <textarea
+                  id="bio"
+                  name="bio"
+                  rows="3"
+                  className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                  placeholder="Tell us about yourself"
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                ></textarea>
+              </div>
+              <div>
+                <label htmlFor="location" className="block text-sm font-medium text-purple-700">Location</label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                  placeholder="Your location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="website" className="block text-sm font-medium text-purple-700">Website</label>
+                <input
+                  type="url"
+                  id="website"
+                  name="website"
+                  className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                  placeholder="https://example.com"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-purple-700">Skills</label>
+                {skills.map((skill, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                    placeholder="Enter a skill"
+                    value={skill}
+                    onChange={(e) => updateField(setSkills, skills, index, e.target.value)}
+                  />
+                ))}
+                <button type="button" onClick={() => addField(setSkills, skills)} className="mt-2 text-sm text-purple-600">
+                  Add Skill
+                </button>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-purple-700">Social Links</label>
+                <input
+                  type="url"
+                  placeholder="LinkedIn"
+                  value={socialLinks.linkedin}
+                  onChange={(e) => setSocialLinks({...socialLinks, linkedin: e.target.value})}
+                  className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                />
+                <input
+                  type="url"
+                  placeholder="GitHub"
+                  value={socialLinks.github}
+                  onChange={(e) => setSocialLinks({...socialLinks, github: e.target.value})}
+                  className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                />
+                <input
+                  type="url"
+                  placeholder="Twitter"
+                  value={socialLinks.twitter}
+                  onChange={(e) => setSocialLinks({...socialLinks, twitter: e.target.value})}
+                  className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-purple-700">Interests</label>
+                {interests.map((interest, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                    placeholder="Enter an interest"
+                    value={interest}
+                    onChange={(e) => updateField(setInterests, interests, index, e.target.value)}
+                  />
+                ))}
+                <button type="button" onClick={() => addField(setInterests, interests)} className="mt-2 text-sm text-purple-600">
+                  Add Interest
+                </button>
+              </div>
 
+              {/* Projects */}
+                <div>
+                <label className="block text-sm font-medium text-purple-700">Projects</label>
+                {projects.map((project, index) => (
+                    <div key={index} className="space-y-2 mb-4">
+                    <input
+                        type="text"
+                        placeholder="Project Title"
+                        value={project.title}
+                        onChange={(e) => {
+                        const newProjects = [...projects];
+                        newProjects[index].title = e.target.value;
+                        setProjects(newProjects);
+                        }}
+                        className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Project Description"
+                        value={project.description}
+                        onChange={(e) => {
+                        const newProjects = [...projects];
+                        newProjects[index].description = e.target.value;
+                        setProjects(newProjects);
+                        }}
+                        className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                    />
+                    <input
+                        type="url"
+                        placeholder="Project Link"
+                        value={project.link}
+                        onChange={(e) => {
+                        const newProjects = [...projects];
+                        newProjects[index].link = e.target.value;
+                        setProjects(newProjects);
+                        }}
+                        className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                    />
+                    <input
+                        type="url"
+                        placeholder="Project Image URL"
+                        value={project.image}
+                        onChange={(e) => {
+                        const newProjects = [...projects];
+                        newProjects[index].image = e.target.value;
+                        setProjects(newProjects);
+                        }}
+                        className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                    />
+                    </div>
+                ))}
+                <button 
+                    type="button" 
+                    onClick={() => setProjects([...projects, { title: '', description: '', link: '', image: '' }])} 
+                    className="mt-2 text-sm text-purple-600"
+                >
+                    Add Project
+                </button>
+                </div>
+            </div>
+
+          )}
           <div>
             <button
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
             >
-              Sign up
+              {step === 1 ? "Next" : "Sign up"}
             </button>
           </div>
         </form>
-
-         {/* Go back to login button */}
-         <div className="text-center">
-          <p className="mt-2 text-sm text-purple-600">
-            Already have an account?{' '}
-            <Link href="/login" className="font-medium text-purple-600 hover:text-purple-500">
-              Go back to login
-            </Link>
-          </p>
-        </div>
+        {step === 1 && (
+          <div className="text-center">
+            <p className="mt-2 text-sm text-purple-600">
+              Already have an account?{' '}
+              <Link href="/login" className="font-medium text-purple-600 hover:text-purple-500">
+                Go back to login
+              </Link>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )
