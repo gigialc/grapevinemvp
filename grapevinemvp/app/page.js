@@ -1,4 +1,4 @@
-import ProjectCard from './components/projectCard'
+import ProjectCard from './components/ProjectCard'
 import Navbar from './components/Navbar'
 import Login from './login/page'
 

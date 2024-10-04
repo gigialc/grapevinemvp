@@ -26,7 +26,7 @@ const ExplorePage = () => {
       <h1>Explore Projects</h1>
       <SearchBar onSearch={handleSearch} />
       <Filters onChange={handleFilterChange} />
-      <ProjectGrid searchQuery={searchQuery} filters={filters} />
+      {/* <ProjectGrid searchQuery={searchQuery} filters={filters} /> */}
     </div>
     </div>
   );
