@@ -1,5 +1,5 @@
 import React from 'react';
-import ProjectCard from './ProjectCard'
+import ProjectCard from './projectCard'
 
 const ProjectGrid = ({ projects, searchQuery, filters }) => {
   // Apply filters and search logic here
