@@ -2,10 +2,13 @@
 import React from 'react';
 import Image from 'next/image';
 
+import Link from 'next/link';
+
 
 
 const UserCard = ({ user }) => {
     return (
+        <Link href={`/profile/${user._id}`} className="block hover:shadow-lg transition-shadow duration-300">
         <div className="user-card bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
           <div className="flex items-center mb-6">
             <div className="relative w-20 h-20 mr-4">
@@ -43,6 +46,7 @@ const UserCard = ({ user }) => {
             </div>
           </div>
         </div>
+     </Link>
       );
     };
     
