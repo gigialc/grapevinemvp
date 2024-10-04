@@ -40,7 +40,10 @@ const Navbar = () => {
                 Profile
               </Link>
               <Link href="/explore" className="mr-4 hover:text-purple-200">
-                Explore
+                Explore🧭
+              </Link>
+              <Link href="/matches" className="mr-4 hover:text-purple-200">
+                Matches🥂
               </Link>
               <button 
                 onClick={() => signOut({ callbackUrl: '/' })}
@@ -80,13 +83,16 @@ const Navbar = () => {
                 Profile
               </Link>
               <Link href="/explore" className="block py-2 hover:text-purple-200">
-                Explore
+                Explore🧭
+              </Link>
+              <Link href="/matches" className="block py-2 hover:text-purple-200">
+                Matches🥂
               </Link>
               <button 
                 onClick={() => signOut({ callbackUrl: '/' })}
                 className="block w-full text-left py-2 hover:text-purple-200 text-purple-600"
               >
-                Sign out
+                Sign out 
               </button>
               
             </>
