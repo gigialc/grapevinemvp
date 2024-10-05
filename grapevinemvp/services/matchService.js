@@ -1,4 +1,5 @@
 import User from '../models/User';
+import Group from '../models/Group';
 
 function calculateSimilarity(user1, user2) {
   let score = 0;
@@ -18,7 +19,7 @@ function calculateSimilarity(user1, user2) {
 
 async function matchUsers() {
   try {
-    const users = await User.find();
+    const users = await User.find(); 
     const groups = [];
     
     while (users.length >= 4) {
@@ -30,13 +31,13 @@ async function matchUsers() {
         let bestMatch = null;
         let highestScore = -1;
 
-        users.forEach(user => {
+        for (const user of users) {
           let score = calculateSimilarity(seedUser, user);
           if (score > highestScore) {
             bestMatch = user;
             highestScore = score;
           }
-        });
+        }
 
         if (bestMatch) {
           group.push(bestMatch);
@@ -45,6 +46,10 @@ async function matchUsers() {
       }
 
       groups.push(group);
+      
+      // Save the group to the database
+      const groupToSave = new Group({ members: group.map(user => user._id) });
+      await groupToSave.save();
     }
 
     return groups;
