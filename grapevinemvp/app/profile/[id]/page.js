@@ -141,7 +141,21 @@ export default function UserProfile() {
                                     ))}
                                 </div>
                             </section>
+
+                        <h2 className="text-2xl font-semibold mt-4 mb-2">Events</h2>
+                        <div className="flex flex-wrap gap-2">
+                            {user.participatingInMEC && (
+                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">MEC (MIT) Hackathon</span>
+                            )}
+                            {user.participatingInDivHacks && (
+                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">DivHacks (Columbia)</span>
+                            )}
                         </div>
+
+                            
+                        </div>
+                    {/* events */}
+                
                         <div className="md:w-1/2">
                             <section className="mb-6">
                                 <h2 className="text-xl font-semibold mb-2">School</h2>
@@ -183,76 +197,11 @@ export default function UserProfile() {
                                 <p className="text-gray-700 mt-2">{project.description}</p>
                                 {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
                             </div>
-<<<<<<< Updated upstream
-                        </section>
-                    )}
-                    <section className="mb-6">
-                        <h2 className="text-xl font-semibold mb-2">Events</h2>
-                        <div className="flex items-center">
-                            <input 
-                                type="checkbox" 
-                                name="participatingInMEC" 
-                                checked={user.participatingInMEC} 
-                                onChange={handleEventChange} 
-                                className="mr-2"
-                            />
-                            <label>MEC (MIT) Hackathon</label>
-                        </div>
-                        <div className="flex items-center">
-                            <input 
-                                type="checkbox" 
-                                name="participatingInDivHacks" 
-                                checked={user.participatingInDivHacks} 
-                                onChange={handleEventChange} 
-                                className="mr-2"
-                            />
-                            <label>DivHacks (Columbia)</label>
-                        </div>
-                    </section>
-                </div>
-                <div className="md:w-2/3">
-                    <Tabs>
-                        <TabList>
-                            <Tab><FontAwesomeIcon icon={faBriefcase} className="mr-2" /> Past Projects</Tab>
-                            {/* <Tab><FontAwesomeIcon icon={faGraduationCap} className="mr-2" /> Education</Tab> */}
-                            <Tab><FontAwesomeIcon icon={faProjectDiagram} className="mr-2" /> Current Projects</Tab>
-                        </TabList>
-
-                        <TabPanel>
-                            {user.experience && user.experience.map((exp, index) => (
-                                <div key={index} className="mb-4 border-b border-gray-200 pb-4">
-                                    <h3 className="text-lg font-semibold">{exp.title}</h3>
-                                    <p className="text-gray-600">{exp.company}</p>
-                                    <p className="text-gray-600">{exp.location}</p>
-                                    <p className="text-gray-600">{new Date(exp.from).toLocaleDateString()} - {exp.current ? 'Present' : new Date(exp.to).toLocaleDateString()}</p>
-                                    <p className="text-gray-700 mt-2">{exp.description}</p>
-                                </div>
-                            ))}
-                        </TabPanel> 
-
-                        {/* education string */}
-              
-
-                        <TabPanel>
-                            {user.projects && user.projects.map((project, index) => (
-                                <div key={index} className="mb-4 border-b border-gray-200 pb-4">
-                                    <h3 className="text-lg font-semibold">{project.title}</h3>
-                                    <p className="text-gray-700 mt-2">{project.description}</p>
-                                    {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
-                                </div>
-                            ))}
-                        </TabPanel>
-                    </Tabs>
-                </div>
-            </div>
-            
-=======
                         ))}
                         
                     </div>
                 </TabPanel>
             </Tabs>
->>>>>>> Stashed changes
         </div>
     </main>
 );
