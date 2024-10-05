@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 export default function AddProject() {
   const router = useRouter();
   // const searchParams = useSearchParams();
-  const projectType = searchParams.get('type');
+  // const projectType = searchParams.get('type');
   const [images, setImages] = useState('');
   const { data: session } = useSession();
   const [projects, setProjects] = useState([]);
