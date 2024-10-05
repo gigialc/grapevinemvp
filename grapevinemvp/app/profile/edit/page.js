@@ -6,221 +6,186 @@ import { useRouter } from 'next/navigation';
 import Navbar from "../../components/Navbar";
 
 export default function EditProfile() {
-    const { data: session, status } = useSession();
-    const [user, setUser] = useState(null);
-    const router = useRouter();
+  const { data: session, status } = useSession();
+  const [user, setUser] = useState(null);
+  const router = useRouter();
 
-    useEffect(() => {
-        if (session?.user?.email) {
-            fetchUserData(session.user.email);
-        }
-    }, [session]);
-
-    const fetchUserData = async (email) => {
-        try {
-            const response = await fetch(`/api/user?email=${email}`);
-            if (response.ok) {
-                const userData = await response.json();
-                setUser(userData);
-            } else {
-                console.error('Failed to fetch user data');
-            }
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-        }
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setUser(prevUser => ({
-            ...prevUser,
-            [name]: value
-        }));
-    };
-
-    const handleArrayChange = (e, index, field) => {
-        const { value } = e.target;
-        setUser(prevUser => {
-            const newArray = [...prevUser[field]];
-            newArray[index] = value;
-            return { ...prevUser, [field]: newArray };
-        });
-    };
-
-    const handleObjectChange = (e, field, subfield) => {
-        const { value } = e.target;
-        setUser(prevUser => ({
-            ...prevUser,
-            [field]: {
-                ...prevUser[field],
-                [subfield]: value
-            }
-        }));
-    };
-
-    const handleEducationChange = (index, field, value) => {
-        setUser(prevUser => {
-            const newEducation = [...prevUser.education];
-            newEducation[index] = { ...newEducation[index], [field]: value };
-            return { ...prevUser, education: newEducation };
-        });
-    };
-
-    const handleProjectChange = (index, field, value) => {
-        setUser(prevUser => {
-            const newProjects = [...prevUser.projects];
-            newProjects[index] = { ...newProjects[index], [field]: value };
-            return { ...prevUser, projects: newProjects };
-        });
-    };
-
-    const addField = (field) => {
-        setUser(prevUser => ({
-            ...prevUser,
-            [field]: [...prevUser[field], field === 'education' ? {
-                school: '',
-                degree: '',
-                fieldOfStudy: '',
-                from: '',
-                to: '',
-                current: false,
-                description: ''
-            } : field === 'projects' ? {
-                title: '',
-                description: '',
-                link: '',
-                image: ''
-            } : '']
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch('/api/user', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(user),
-            });
-            if (response.ok) {
-                router.push('/profile');
-            } else {
-                console.error('Failed to update profile');
-            }
-        } catch (error) {
-            console.error('Error updating profile:', error);
-        }
-    };
-
-    if (status === 'loading' || !user) {
-        return <div>Loading...</div>;
+  useEffect(() => {
+    if (session?.user?.email) {
+      fetchUserData(session.user.email);
     }
+  }, [session]);
 
-    return (
-        <main className="container mx-auto px-4">
-            <Navbar />
-            <form onSubmit={handleSubmit} className="max-w-2xl mx-auto my-8">
-                <h1 className="text-3xl font-bold mb-4">Edit Profile</h1>
-                
-                {/* Existing fields */}
-                {/* ... */}
+  const fetchUserData = async (email) => {
+    try {
+      const response = await fetch(`/api/user?email=${email}`);
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+      } else {
+        console.error('Failed to fetch user data');
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
 
-                {/* Education */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Education</label>
-                    {user.education.map((education, index) => (
-                        <div key={index} className="mb-2">
-                            <input
-                                type="text"
-                                placeholder="School"
-                                value={education.school}
-                                onChange={(e) => handleEducationChange(index, 'school', e.target.value)}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                            />
-                            {/* Add more fields for education */}
-                        </div>
-                    ))}
-                    <button type="button" onClick={() => addField('education')} className="text-purple-600 hover:text-purple-800">
-                        Add Education
-                    </button>
-                </div>
-                
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser(prevUser => ({ ...prevUser, [name]: value }));
+  };
 
-                {/* Social Links */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Social Links</label>
-                    <input
-                        type="text"
-                        placeholder="LinkedIn"
-                        value={user.socialLinks.linkedin}
-                        onChange={(e) => handleObjectChange(e, 'socialLinks', 'linkedin')}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                    />
-                    <input
-                        type="text"
-                        placeholder="GitHub"
-                        value={user.socialLinks.github}
-                        onChange={(e) => handleObjectChange(e, 'socialLinks', 'github')}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Twitter"
-                        value={user.socialLinks.twitter}
-                        onChange={(e) => handleObjectChange(e, 'socialLinks', 'twitter')}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                    />
-                </div>
+  const handleArrayChange = (e, index, field) => {
+    const { value } = e.target;
+    setUser(prevUser => {
+      const newArray = [...prevUser[field]];
+      newArray[index] = value;
+      return { ...prevUser, [field]: newArray };
+    });
+  };
 
-                {/* Projects */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Projects</label>
-                    {user.projects.map((project, index) => (
-                        <div key={index} className="mb-2">
-                            <input
-                                type="text"
-                                placeholder="Project Title"
-                                value={project.title}
-                                onChange={(e) => handleProjectChange(index, 'title', e.target.value)}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                            />
-                            <textarea
-                                placeholder="Project Description"
-                                value={project.description}
-                                onChange={(e) => handleProjectChange(index, 'description', e.target.value)}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                            ></textarea>
-                            {/* Add more fields for projects */}
-                        </div>
-                    ))}
-                    <button type="button" onClick={() => addField('projects')} className="text-purple-600 hover:text-purple-800">
-                        Add Project
-                    </button>
-                </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/user', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+      const updatedUser = await response.json();
+      console.log('Profile updated successfully:', updatedUser);
+      router.push('/profile');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
+  };
 
-                {/* Interests */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Interests</label>
-                    {user.interests.map((interest, index) => (
-                        <input
-                            key={index}
-                            type="text"
-                            value={interest}
-                            onChange={(e) => handleArrayChange(e, index, 'interests')}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                        />
-                    ))}
-                    <button type="button" onClick={() => addField('interests')} className="text-purple-600 hover:text-purple-800">
-                        Add Interest
-                    </button>
-                </div>
+  if (status === 'loading' || !user) {
+    return <div>Loading...</div>;
+  }
 
-                <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Save Changes
-                </button>
-            </form>
-        </main>
-    );
+  return (
+    <div>
+      <Navbar />
+      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mt-8 p-4">
+        <h1 className="text-2xl font-bold mb-4">Edit Profile</h1>
+        
+        <div className="mb-4">
+          <label className="block mb-2">Name</label>
+          <input
+            type="text"
+            name="name"
+            value={user.name || ''}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block mb-2">Bio</label>
+          <textarea
+            name="bio"
+            value={user.bio || ''}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            rows="4"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block mb-2">Interests</label>
+          {user.interests && user.interests.map((interest, index) => (
+            <input
+              key={index}
+              type="text"
+              value={interest}
+              onChange={(e) => handleArrayChange(e, index, 'interests')}
+              className="w-full p-2 border rounded mb-2"
+            />
+          ))}
+          <button type="button" onClick={() => setUser(prev => ({ ...prev, interests: [...prev.interests, ''] }))}>
+            Add Interest
+          </button>
+        </div>
+
+        <div className="mb-4">
+          <label className="block mb-2">Skills</label>
+          {user.skills && user.skills.map((skill, index) => (
+            <input
+              key={index}
+              type="text"
+              value={skill}
+              onChange={(e) => handleArrayChange(e, index, 'skills')}
+              className="w-full p-2 border rounded mb-2"
+            />
+          ))}
+          <button type="button" onClick={() => setUser(prev => ({ ...prev, skills: [...prev.skills, ''] }))}>
+            Add Skill
+          </button>
+        </div>
+
+        <div className="mb-4">
+          <label className="block mb-2">School</label>
+          <input
+            type="text"
+            name="education"
+            value={user.education || ''}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block mb-2">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={user.email || ''}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block mb-2">Location</label>
+          <input
+            type="text"
+            name="location"
+            value={user.location || ''}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block mb-2">LinkedIn</label>
+          <input
+            type="url"
+            name="linkedin"
+            value={user.linkedin || ''}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+
+        </div>
+        <div className="mb-4">
+            <label className="block mb-2">GitHub</label>
+            <input
+                type="url"
+                name="github"
+                value={user.github || ''}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+            />
+        </div>
+
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+          Save Changes
+        </button>
+      </form>
+    </div>
+  );
 }
