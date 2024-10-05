@@ -185,7 +185,6 @@ export default function UserProfile() {
                     </Tabs>
                 </div>
             </div>
-            
         </div>
     </main>
 );

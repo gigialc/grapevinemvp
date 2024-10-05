@@ -1,49 +1,55 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { signIn } from 'next-auth/react'
-import Link from 'next/link'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import Link from "next/link";
 
 export default function SignUp() {
-  const [step, setStep] = useState(1)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [profileImage, setProfileImage] = useState('')
-  const [bio, setBio] = useState('')
-  const [location, setLocation] = useState('')
-  const [website, setWebsite] = useState('')
-  const [skills, setSkills] = useState([''])
-  const [education, setEducation] = useState('')
+  const [step, setStep] = useState(1);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+  const [bio, setBio] = useState("");
+  const [location, setLocation] = useState("");
+  const [website, setWebsite] = useState("");
+  const [skills, setSkills] = useState([""]);
+  const [education, setEducation] = useState("");
   const [socialLinks, setSocialLinks] = useState({
-    linkedin: '',
-    github: '',
+    linkedin: "",
+    github: "",
     // twitter: ''
-  })
-  const [projects, setProjects] = useState([{
-    title: '',
-    description: '',
-    link: '',
-    image: ''
-  }])
-  const [projectInterest, setProjectInterest] = useState('')
-  const [interests, setInterests] = useState([''])
-  const [participatingInMEC, setParticipatingInMEC] = useState(false); // New state for MEC participation
-  const [participatingInDivHacks, setParticipatingInDivHacks] = useState(false); // New state for DivHacks participation
-  const router = useRouter()
+  });
+  const [projects, setProjects] = useState([
+    {
+      title: "",
+      description: "",
+      link: "",
+      image: "",
+    },
+  ]);
+  const [projectInterest, setProjectInterest] = useState("");
+  const [interests, setInterests] = useState([""]);
+  const [showDropdown, setShowDropdown] = useState(false); // State to manage dropdown visibility
+  const [tags, setTags] = useState([]); // State to manage selected tags
+  const availableTags = ["MEC (MIT)", "DivHacks (Columbia)"]; // Example tags for the dropdown
+  const router = useRouter();
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
-  
+    formData.append("file", file);
+    formData.append(
+      "upload_preset",
+      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+    );
+
     try {
       const response = await fetch(
         `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
         {
-          method: 'POST',
+          method: "POST",
           body: formData,
         }
       );
@@ -53,7 +59,7 @@ export default function SignUp() {
       const data = await response.json();
       setProfileImage(data.secure_url);
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
     }
   };
 
@@ -63,68 +69,74 @@ export default function SignUp() {
       setStep(2);
       return;
     }
-    
+
     try {
-        const userData = {
-          name,
-          email,
-          password,
-          profileImage, // Changed from profileImageUrl to profileImage
-          bio,
-          location,
-          website,
-          skills: skills.filter(skill => skill.trim() !== ''),
-          education,
-          socialLinks,
-          projects,
-          projectInterest,
-          interests: interests.filter(interest => interest.trim() !== ''),
-          participatingInMEC, // Include MEC participation
-          participatingInDivHacks // Include DivHacks participation
-        };
-  
-        const response = await fetch('/api/auth/signup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(userData),
-        });
-  
+      const userData = {
+        name,
+        email,
+        password,
+        profileImage,
+        bio,
+        location,
+        website,
+        skills: skills.filter((skill) => skill.trim() !== ""),
+        education,
+        socialLinks,
+        projects,
+        projectInterest,
+        interests: interests.filter((interest) => interest.trim() !== ""),
+        events: tags, // Use the selected tags as events
+      };
+
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
       if (!response.ok) {
         const errorData = await response.text();
-        console.error('Signup failed:', response.status, errorData);
+        console.error("Signup failed:", response.status, errorData);
         return;
       }
-  
+
       const data = await response.json();
-      console.log('Signup successful', data);
-  
-      const signInResult = await signIn('credentials', {
+      console.log("Signup successful", data);
+
+      const signInResult = await signIn("credentials", {
         email,
         password,
         redirect: false,
       });
-  
+
       if (signInResult?.ok) {
-        router.push('/profile');
+        router.push("/profile");
       } else {
-        console.error('Sign in failed after registration', signInResult);
+        console.error("Sign in failed after registration", signInResult);
       }
     } catch (error) {
-      console.error('Error during signup:', error);
+      console.error("Error during signup:", error);
     }
-  }
+  };
 
   const addField = (setter, array) => {
-    setter([...array, '']);
-  }
+    setter([...array, ""]);
+  };
 
   const updateField = (setter, array, index, value) => {
     const newArray = [...array];
     newArray[index] = value;
     setter(newArray);
-  }
+  };
+
+  // Function to add a tag
+  const addTag = (tag) => {
+    if (!tags.includes(tag)) {
+      setTags([...tags, tag]);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-purple-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -142,7 +154,9 @@ export default function SignUp() {
           {step === 1 ? (
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="name" className="sr-only">Name</label>
+                <label htmlFor="name" className="sr-only">
+                  Name
+                </label>
                 <input
                   id="name"
                   name="name"
@@ -155,7 +169,9 @@ export default function SignUp() {
                 />
               </div>
               <div>
-                <label htmlFor="email-address" className="sr-only">Email address</label>
+                <label htmlFor="email-address" className="sr-only">
+                  Email address
+                </label>
                 <input
                   id="email-address"
                   name="email"
@@ -169,7 +185,9 @@ export default function SignUp() {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="sr-only">Password</label>
+                <label htmlFor="password" className="sr-only">
+                  Password
+                </label>
                 <input
                   id="password"
                   name="password"
@@ -187,8 +205,13 @@ export default function SignUp() {
             <div className="space-y-4">
               <div>
                 <div>
-                <label htmlFor="profileImage" className="block text-sm font-medium text-purple-700">Profile Image</label>
-                <input
+                  <label
+                    htmlFor="profileImage"
+                    className="block text-sm font-medium text-purple-700"
+                  >
+                    Profile Image
+                  </label>
+                  <input
                     type="file"
                     id="profileImage"
                     onChange={handleImageUpload}
@@ -198,11 +221,16 @@ export default function SignUp() {
                     file:text-sm file:font-semibold
                     file:bg-purple-50 file:text-purple-700
                     hover:file:bg-purple-100"
-                />
+                  />
                 </div>
-                </div>
+              </div>
               <div>
-                <label htmlFor="bio" className="block text-sm font-medium text-purple-700">Bio</label>
+                <label
+                  htmlFor="bio"
+                  className="block text-sm font-medium text-purple-700"
+                >
+                  Bio
+                </label>
                 <textarea
                   id="bio"
                   name="bio"
@@ -215,7 +243,12 @@ export default function SignUp() {
                 ></textarea>
               </div>
               <div>
-                <label htmlFor="projectInterest" className="block text-sm font-medium text-purple-700">Project Interest</label>
+                <label
+                  htmlFor="projectInterest"
+                  className="block text-sm font-medium text-purple-700"
+                >
+                  Project Interest
+                </label>
                 <input
                   type="text"
                   id="projectInterest"
@@ -228,7 +261,12 @@ export default function SignUp() {
                 />
               </div>
               <div>
-                <label htmlFor="education" className="block text-sm font-medium text-purple-700">School</label>
+                <label
+                  htmlFor="education"
+                  className="block text-sm font-medium text-purple-700"
+                >
+                  School
+                </label>
                 <input
                   type="text"
                   id="education"
@@ -240,7 +278,12 @@ export default function SignUp() {
                 />
               </div>
               <div>
-                <label htmlFor="website" className="block text-sm font-medium text-purple-700">Website</label>
+                <label
+                  htmlFor="website"
+                  className="block text-sm font-medium text-purple-700"
+                >
+                  Website
+                </label>
                 <input
                   type="url"
                   id="website"
@@ -252,7 +295,9 @@ export default function SignUp() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-purple-700">Skills</label>
+                <label className="block text-sm font-medium text-purple-700">
+                  Skills
+                </label>
                 {skills.map((skill, index) => (
                   <input
                     key={index}
@@ -261,27 +306,39 @@ export default function SignUp() {
                     className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
                     placeholder="Enter a skill"
                     value={skill}
-                    onChange={(e) => updateField(setSkills, skills, index, e.target.value)}
+                    onChange={(e) =>
+                      updateField(setSkills, skills, index, e.target.value)
+                    }
                   />
                 ))}
-                <button type="button" onClick={() => addField(setSkills, skills)} className="mt-2 text-sm text-purple-600">
+                <button
+                  type="button"
+                  onClick={() => addField(setSkills, skills)}
+                  className="mt-2 text-sm text-purple-600"
+                >
                   Add Skill
                 </button>
               </div>
               <div>
-                <label className="block text-sm font-medium text-purple-700">Social Links</label>
+                <label className="block text-sm font-medium text-purple-700">
+                  Social Links
+                </label>
                 <input
                   type="url"
                   placeholder="LinkedIn"
                   value={socialLinks.linkedin}
-                  onChange={(e) => setSocialLinks({...socialLinks, linkedin: e.target.value})}
+                  onChange={(e) =>
+                    setSocialLinks({ ...socialLinks, linkedin: e.target.value })
+                  }
                   className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
                 />
                 <input
                   type="url"
                   placeholder="GitHub"
                   value={socialLinks.github}
-                  onChange={(e) => setSocialLinks({...socialLinks, github: e.target.value})}
+                  onChange={(e) =>
+                    setSocialLinks({ ...socialLinks, github: e.target.value })
+                  }
                   className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
                 />
                 {/* <input
@@ -293,7 +350,9 @@ export default function SignUp() {
                 /> */}
               </div>
               <div>
-                <label className="block text-sm font-medium text-purple-700">Interests</label>
+                <label className="block text-sm font-medium text-purple-700">
+                  Interests
+                </label>
                 {interests.map((interest, index) => (
                   <input
                     key={index}
@@ -302,96 +361,78 @@ export default function SignUp() {
                     className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
                     placeholder="Enter an interest"
                     value={interest}
-                    onChange={(e) => updateField(setInterests, interests, index, e.target.value)}
+                    onChange={(e) =>
+                      updateField(
+                        setInterests,
+                        interests,
+                        index,
+                        e.target.value
+                      )
+                    }
                   />
                 ))}
-                <button type="button" onClick={() => addField(setInterests, interests)} className="mt-2 text-sm text-purple-600">
+                <button
+                  type="button"
+                  onClick={() => addField(setInterests, interests)}
+                  className="mt-2 text-sm text-purple-600"
+                >
                   Add Interest
                 </button>
               </div>
 
-              {/* Projects
-                <div>
-                <label className="block text-sm font-medium text-purple-700">Projects</label>
-                {projects.map((project, index) => (
-                    <div key={index} className="space-y-2 mb-4">
-                    <input
-                        type="text"
-                        placeholder="Project Title"
-                        value={project.title}
-                        onChange={(e) => {
-                        const newProjects = [...projects];
-                        newProjects[index].title = e.target.value;
-                        setProjects(newProjects);
-                        }}
-                        className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Project Description"
-                        value={project.description}
-                        onChange={(e) => {
-                        const newProjects = [...projects];
-                        newProjects[index].description = e.target.value;
-                        setProjects(newProjects);
-                        }}
-                        className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                    />
-                    <input
-                        type="url"
-                        placeholder="Project Link"
-                        value={project.link}
-                        onChange={(e) => {
-                        const newProjects = [...projects];
-                        newProjects[index].link = e.target.value;
-                        setProjects(newProjects);
-                        }}
-                        className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                    />
-                    <input
-                        type="url"
-                        placeholder="Project Image URL"
-                        value={project.image}
-                        onChange={(e) => {
-                        const newProjects = [...projects];
-                        newProjects[index].image = e.target.value;
-                        setProjects(newProjects);
-                        }}
-                        className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
-                    />
-                    </div>
-                ))}
-                <button 
-                    type="button" 
-                    onClick={() => setProjects([...projects, { title: '', description: '', link: '', image: '' }])} 
-                    className="mt-2 text-sm text-purple-600"
+              <div>
+                <label className="block text-sm font-medium text-purple-700">
+                  Events
+                </label>
+                <div
+                  className="mt-2 p-2 border border-purple-300 rounded-md cursor-pointer relative" // White bar styles
+                  onClick={() => setShowDropdown(!showDropdown)} // Toggle dropdown visibility on click
                 >
-                    Add Project
-                </button>
-                </div> */}
-                <div>
-                <label className="block text-sm font-medium text-purple-700">Events</label>
-                <div className="flex items-center">
-                  <input 
-                    type="checkbox" 
-                    checked={participatingInMEC} 
-                    onChange={(e) => setParticipatingInMEC(e.target.checked)} 
-                    className="mr-2"
-                  />
-                  <label>MEC (MIT) Hackathon</label>
+                  {tags.length === 0 ? (
+                    <span className="text-gray-500">Click to add an event</span>
+                  ) : (
+                    tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className={`px-2 py-1 rounded-full text-white ${
+                          tag.includes("MEC (MIT)") // Example condition for color
+                            ? "bg-red-500 opacity-70"
+                            : "bg-blue-500 opacity-70"
+                        } text-xs mr-1`} // Adjusted to text-xs for smaller tags
+                      >
+                        {tag}
+                        <button
+                          type="button"
+                          className="ml-1 text-xs"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent click event from bubbling up
+                            setTags(tags.filter((t) => t !== tag)); // Remove tag
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    ))
+                  )}
                 </div>
-                <div className="flex items-center">
-                  <input 
-                    type="checkbox" 
-                    checked={participatingInDivHacks} 
-                    onChange={(e) => setParticipatingInDivHacks(e.target.checked)} 
-                    className="mr-2"
-                  />
-                  <label>DivHacks (Columbia)</label>
-                </div>
+                {showDropdown && ( // Conditionally render the dropdown when the bar is clicked
+                  <div className="absolute mt-1 w-full bg-white border border-purple-300 rounded-md shadow-lg z-10">
+                    {availableTags.map((tag, index) => (
+                      <div
+                        key={index}
+                        className="p-2 cursor-pointer hover:bg-purple-100"
+                        onClick={() => {
+                          addTag(tag); // Add tag to the list
+                          setShowDropdown(false); // Close dropdown after selection
+                        }}
+                      >
+                        {tag}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
-
           )}
           <div>
             <button
@@ -405,8 +446,11 @@ export default function SignUp() {
         {step === 1 && (
           <div className="text-center">
             <p className="mt-2 text-sm text-purple-600">
-              Already have an account?{' '}
-              <Link href="/login" className="font-medium text-purple-600 hover:text-purple-500">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-medium text-purple-600 hover:text-purple-500"
+              >
                 Go back to login
               </Link>
             </p>
@@ -414,5 +458,5 @@ export default function SignUp() {
         )}
       </div>
     </div>
-  )
+  );
 }
