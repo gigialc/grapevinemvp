@@ -6,8 +6,7 @@ import Navbar from '../components/Navbar';
 import { useSession } from "next-auth/react";
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-
-
+import { useRouter } from 'next/router';
 
 
 export default function AddProject() {
