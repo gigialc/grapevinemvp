@@ -1,7 +1,9 @@
+
 // /app/services/matchService.js
 
 import User from '@/models/User';
 import Group from '@/models/Groups'; // Make sure you have a Group model
+
 
 function calculateSimilarity(user1, user2) {
   let score = 0;
