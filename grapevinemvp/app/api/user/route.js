@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/mongodb';
 import User from '@/models/User';
+import { ObjectId } from 'mongodb';
 
 export async function GET(request) {
   try {
@@ -39,11 +40,24 @@ export async function PUT(request) {
   try {
     await connectDB();
     const data = await request.json();
-    const { email, ...updateData } = data;
+    const { email, project, ...updateData } = data;
+
+    let updateOperation;
+    if (project) {
+      // Adding a new project
+      updateOperation = {
+        $push: { projects: { ...project, _id: new ObjectId() } }
+      };
+    } else if (Object.keys(updateData).length > 0) {
+      // General user update
+      updateOperation = { $set: updateData };
+    } else {
+      return NextResponse.json({ error: 'No update data provided' }, { status: 400 });
+    }
 
     const updatedUser = await User.findOneAndUpdate(
       { email: email },
-      { $set: updateData },
+      updateOperation,
       { new: true, runValidators: true }
     );
 
