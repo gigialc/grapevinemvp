@@ -112,8 +112,7 @@ export default function UserProfile() {
                      
                     </button>
                 )} */}
-            </div>
-            
+            </div> 
             <Tabs>
                 <TabList className="flex border-b">
                     <Tab className="px-4 py-2 font-semibold text-gray-700 hover:text-purple-600 focus:outline-none">

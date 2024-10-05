@@ -18,7 +18,7 @@ export async function POST(request) {
     
     
     const body = await request.json();
-    const { name, email, password, profileImage, bio, location, website, skills, education, socialLinks, projects, interests } = body;
+    const { name, email, password, profileImage, bio, location, website, skills, education, socialLinks, projects, interests, events} = body;
     
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -44,7 +44,8 @@ export async function POST(request) {
       education,
       socialLinks,
       projects,
-      interests
+      interests,
+      events
     });
     
     await newUser.save();
