@@ -2,29 +2,27 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import Navbar from "../components/Navbar";
+import Navbar from '../components/Navbar';
 
 export default function Matches() {
-  const { data: session, status } = useSession();
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { data: session } = useSession();
 
   useEffect(() => {
-    if (session?.user?.email) {
-      fetchMatches(session.user.email);
+    if (session) {
+      fetchMatches();
     }
   }, [session]);
 
-  const fetchMatches = async (email) => {
+  const fetchMatches = async () => {
     try {
-      setLoading(true);
-      const response = await fetch(`/api/matches?email=${email}`);
-      if (response.ok) {
-        const matchesData = await response.json();
-        setMatches(matchesData);
-      } else {
-        console.error('Failed to fetch matches');
+      const response = await fetch('/api/match');
+      if (!response.ok) {
+        throw new Error('Failed to fetch matches');
       }
+      const matchData = await response.json();
+      setMatches(matchData);
     } catch (error) {
       console.error('Error fetching matches:', error);
     } finally {
@@ -32,36 +30,27 @@ export default function Matches() {
     }
   };
 
-  const handleMatch = async (matchId) => {
-    // Implement the logic to notify the matched person
-    // This could be an API call to update the match status
-  };
-
-  if (status === 'loading' || loading) {
+  if (loading) {
     return <div>Loading matches...</div>;
   }
 
   return (
     <div>
       <Navbar />
-      <h1>Your Matches</h1>
-      {matches.length === 0 ? (
-        <p>No matches found yet. Keep exploring!</p>
-      ) : (
-        <ul>
-          {matches.map((match) => (
-            <li key={match.id}>
-              <h2>{match.name}</h2>
-              <p>School: {match.school}</p>
-              <p>Project Idea: {match.projectIdea}</p>
-              <p>Skills: {match.skills.join(', ')}</p>
-              <button onClick={() => handleMatch(match.id)}>
-                Connect with {match.name}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="container mx-auto px-4 py-8">
+        {/* <h1 className="text-3xl font-bold mb-6">Your Matches</h1> */}
+        {matches.map((group, index) => (
+          <div key={index} className="mb-8 p-4 bg-white rounded-lg shadow">
+            <h2 className="text-2xl font-semibold mb-4">Suggestion {index + 1}</h2>
+            {group.map((user, userIndex) => (
+              <div key={userIndex} className="mb-2">
+                <p className="font-medium">{user.name}</p>
+                <p className="text-sm text-gray-600">{user.projectInterest}</p>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

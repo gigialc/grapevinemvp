@@ -65,7 +65,7 @@ export default function Profile() {
                             <p className="text-black opacity-75">{user.bio}</p>
                         </div>
                     </div>
-                    {isOwnProfile ? (
+                    {/* {isOwnProfile ? (
                         <Link href="/profile/edit" className="absolute top-4 right-4 bg-white text-purple-600 px-4 py-2 rounded-full hover:bg-purple-100 transition duration-300">
                             Edit Profile
                         </Link>
@@ -73,7 +73,7 @@ export default function Profile() {
                         <button className="absolute top-4 right-4 bg-white text-purple-600 px-4 py-2 rounded-full hover:bg-purple-100 transition duration-300">
                             Connect
                         </button>
-                    )}
+                    )} */}
                 </div>
                 <div className="p-4 md:flex">
                     <div className="md:w-1/3 pr-4">
