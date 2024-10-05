@@ -4,6 +4,8 @@ import User from '@/models/User';
 import { ObjectId } from 'mongodb';
 // import { useState, useEffect } from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
     await connectDB();

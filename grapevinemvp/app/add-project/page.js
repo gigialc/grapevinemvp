@@ -6,6 +6,9 @@ import Navbar from '../components/Navbar';
 import { useSession } from "next-auth/react";
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation'; // Updated import
+import Image from 'next/image';
+
+import { Suspense } from 'react';
 
 export default function AddProject() {
   const router = useRouter();
@@ -98,7 +101,7 @@ export default function AddProject() {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+formData.append('upload_preset',process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
   
     try {
       const response = await fetch(
@@ -119,7 +122,9 @@ export default function AddProject() {
   };
 
 
+
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
       <div className="max-w-2xl mx-auto mt-8 bg-white rounded-lg shadow-md p-6">
@@ -189,7 +194,7 @@ export default function AddProject() {
             <div className="grid grid-cols-3 gap-4 mt-4">
               {project.images.map((image, index) => (
                 <div key={index} className="relative">
-                  <img src={image} alt={`Project image ${index + 1}`} className="w-full h-32 object-cover rounded-md" />
+                  <Image src={image} alt={`Project image ${index + 1}`} className="w-full h-32 object-cover rounded-md" />
                   <button
                     type="button"
                     onClick={() => handleRemoveImage(index)}
@@ -212,5 +217,6 @@ export default function AddProject() {
         </form>
       </div>
     </div>
+    </Suspense>
   );
 }
