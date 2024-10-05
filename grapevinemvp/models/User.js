@@ -4,7 +4,7 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  profileImage: { type: String, default: 'https://via.placeholder.com/150' },
+  profileImage: { type: String, default: '/public/images/default-avatar.jpg' },
   bio: { type: String, maxlength: 500 },
   location: { type: String },
   website: { type: String },
