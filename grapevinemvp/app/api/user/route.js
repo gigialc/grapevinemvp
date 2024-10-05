@@ -2,10 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/mongodb';
 import User from '@/models/User';
 import { ObjectId } from 'mongodb';
-export const dynamic = 'force-dynamic'
-
-export const runtime = 'edge'
-
+// import { useState, useEffect } from 'react';
 
 export async function GET(request) {
   try {
