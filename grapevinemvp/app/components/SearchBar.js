@@ -5,9 +5,20 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 const SearchBar = ({ onSearch }) => {
   const [query, setQuery] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSearch(query);
+    if (query.trim()) {
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        if (!response.ok) {
+          throw new Error('Search failed');
+        }
+        const results = await response.json();
+        onSearch(results);
+      } catch (error) {
+        console.error('Error during search:', error);
+      }
+    }
   };
 
   return (

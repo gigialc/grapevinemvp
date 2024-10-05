@@ -31,9 +31,8 @@ const ExplorePage = () => {
     }
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    // Implement search logic here
+  const handleSearch = (results) => {
+    setUsers(results);
   };
 
   const handleFilterChange = (newFilters) => {
