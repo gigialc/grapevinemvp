@@ -33,6 +33,22 @@ export default function UserProfile() {
     }
   }, [id]);
 
+  const handleEventChange = async (event) => {
+    const { name, checked } = event.target;
+    const updatedUser = { ...user, [name]: checked };
+
+    // Update the user in the database
+    await fetch(`/api/user/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedUser),
+    });
+
+    setUser(updatedUser);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -110,6 +126,29 @@ export default function UserProfile() {
                             </div>
                         </section>
                     )}
+                    <section className="mb-6">
+                        <h2 className="text-xl font-semibold mb-2">Events</h2>
+                        <div className="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                name="participatingInMEC" 
+                                checked={user.participatingInMEC} 
+                                onChange={handleEventChange} 
+                                className="mr-2"
+                            />
+                            <label>MEC (MIT) Hackathon</label>
+                        </div>
+                        <div className="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                name="participatingInDivHacks" 
+                                checked={user.participatingInDivHacks} 
+                                onChange={handleEventChange} 
+                                className="mr-2"
+                            />
+                            <label>DivHacks (Columbia)</label>
+                        </div>
+                    </section>
                 </div>
                 <div className="md:w-2/3">
                     <Tabs>
@@ -146,6 +185,7 @@ export default function UserProfile() {
                     </Tabs>
                 </div>
             </div>
+            
         </div>
     </main>
 );

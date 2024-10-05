@@ -22,7 +22,9 @@ const UserSchema = new mongoose.Schema({
     image: { type: String }
   }],
   projectInterest: { type: String },
-  interests: [{ type: String }]
+  interests: [{ type: String }],
+  participatingInMEC: { type: Boolean, default: false },
+  participatingInDivHacks: { type: Boolean, default: false }
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

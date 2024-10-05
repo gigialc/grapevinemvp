@@ -29,6 +29,8 @@ export default function SignUp() {
   }])
   const [projectInterest, setProjectInterest] = useState('')
   const [interests, setInterests] = useState([''])
+  const [participatingInMEC, setParticipatingInMEC] = useState(false); // New state for MEC participation
+  const [participatingInDivHacks, setParticipatingInDivHacks] = useState(false); // New state for DivHacks participation
   const router = useRouter()
 
   const handleImageUpload = async (e) => {
@@ -76,7 +78,9 @@ export default function SignUp() {
           socialLinks,
           projects,
           projectInterest,
-          interests: interests.filter(interest => interest.trim() !== '')
+          interests: interests.filter(interest => interest.trim() !== ''),
+          participatingInMEC, // Include MEC participation
+          participatingInDivHacks // Include DivHacks participation
         };
   
         const response = await fetch('/api/auth/signup', {
@@ -365,6 +369,27 @@ export default function SignUp() {
                     Add Project
                 </button>
                 </div> */}
+                <div>
+                <label className="block text-sm font-medium text-purple-700">Events</label>
+                <div className="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    checked={participatingInMEC} 
+                    onChange={(e) => setParticipatingInMEC(e.target.checked)} 
+                    className="mr-2"
+                  />
+                  <label>MEC (MIT) Hackathon</label>
+                </div>
+                <div className="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    checked={participatingInDivHacks} 
+                    onChange={(e) => setParticipatingInDivHacks(e.target.checked)} 
+                    className="mr-2"
+                  />
+                  <label>DivHacks (Columbia)</label>
+                </div>
+              </div>
             </div>
 
           )}
