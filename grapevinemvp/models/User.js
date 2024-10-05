@@ -23,10 +23,7 @@ const UserSchema = new mongoose.Schema({
   }],
   projectInterest: { type: String },
   interests: [{ type: String }],
-  events: [{ type: String }],
-  recommendations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] // Store user IDs of recommendations
+  events: [{ type: String }]
 }, { timestamps: true });
-
-console.log('User model is being defined:', mongoose.models.User);
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);
