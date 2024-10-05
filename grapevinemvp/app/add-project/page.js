@@ -7,8 +7,7 @@ import { useSession } from "next-auth/react";
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation'; // Updated import
 import Image from 'next/image';
-
-import { Suspense } from 'react';
+import { Suspense } from 'react'
 
 export default function AddProject() {
   const router = useRouter();
@@ -19,7 +18,6 @@ export default function AddProject() {
   const [projects, setProjects] = useState([]);
   const [user, setUser] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
-
 
   const [project, setProject] = useState({
     title: '',
