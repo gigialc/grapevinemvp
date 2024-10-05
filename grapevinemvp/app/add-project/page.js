@@ -1,7 +1,7 @@
 'use client'
 
 import { use, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import { useSession } from "next-auth/react";
 import { useEffect } from 'react';
@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 
 export default function AddProject() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const projectType = searchParams.get('type');
   const [images, setImages] = useState('');
   const { data: session } = useSession();
