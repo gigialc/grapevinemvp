@@ -1,64 +1,63 @@
-
-// /app/services/matchService.js
-
+import connectDB from '../../mongodb';
 import User from '@/models/User';
-import Group from '@/models/Groups'; // Make sure you have a Group model
-
 
 function calculateSimilarity(user1, user2) {
   let score = 0;
 
+  // Calculate similarity based on common skills
   const commonSkills = user1.skills.filter(skill => user2.skills.includes(skill));
   score += commonSkills.length * 2;
 
+  // Add score if project interest matches
   if (user1.projectInterest === user2.projectInterest) {
     score += 3;
   }
 
+  // Calculate similarity based on common interests
   const commonInterests = user1.interests.filter(interest => user2.interests.includes(interest));
-  score += commonInterests.length; 
+  score += commonInterests.length;
 
   return score;
 }
 
 export async function matchServices() {
+  await connectDB();
   try {
     const users = await User.find(); 
-    const groups = [];
-    
-    while (users.length >= 4) {
-      let group = [];
-      let seedUser = users.pop();
-      group.push(seedUser);
-      
-      for (let i = 0; i < 3; i++) {
-        let bestMatch = null;
-        let highestScore = -1;
 
-        for (const user of users) {
-          let score = calculateSimilarity(seedUser, user);
-          if (score > highestScore) {
-            bestMatch = user;
-            highestScore = score;
-          }
+    // Create a network object to store connections for each user
+    const userNetworks = {};
+
+    for (const seedUser of users) {
+      // Initialize an array to store matches for this user
+      const matches = [];
+
+      for (const user of users) {
+        if (user._id.equals(seedUser._id)) {
+          continue; // Skip matching the user with themselves
         }
 
-        if (bestMatch) {
-          group.push(bestMatch);
-          users.splice(users.indexOf(bestMatch), 1);
-        }
+        const score = calculateSimilarity(seedUser, user);
+        matches.push({ user: user._id, score });
       }
 
-      groups.push(group);
-      
-      // Save the group to the database
-      const groupToSave = new Group({ members: group.map(user => user._id) });
-      await groupToSave.save();
+      // Sort matches based on score (highest similarity first)
+      matches.sort((a, b) => b.score - a.score);
+
+      // Store the top N matches for this user (you can decide how many)
+      userNetworks[seedUser._id] = matches.slice(0,2); // Example: top 10 matches
     }
 
-    return groups;
+    // Optionally save the network information to the database
+    for (const [userId, matches] of Object.entries(userNetworks)) {
+      const user = await User.findById(userId);
+      user.recommendations = matches.map(match => match.user); // Store user IDs of matches
+      await user.save();
+    }
+
+    return userNetworks;
   } catch (error) {
-    console.error("Error matching users:", error);
-    throw error; // Rethrow the error so it can be caught in the API route
+    console.error("Error creating individualized networks:", error);
+    throw error;
   }
 }
