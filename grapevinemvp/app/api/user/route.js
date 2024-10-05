@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/mongodb';
 import User from '@/models/User';
 import { ObjectId } from 'mongodb';
+export const dynamic = 'force-dynamic'
 
 export async function GET(request) {
   try {
