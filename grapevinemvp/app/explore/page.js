@@ -5,7 +5,6 @@ import Filters from '../components/Filters';
 import Navbar from '../components/Navbar';
 import UserCard from '../components/UserCard';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 
 const ExplorePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,7 +12,6 @@ const ExplorePage = () => {
   const [users, setUsers] = useState([]);
   const { data: session } = useSession();
   const [matchingInProgress, setMatchingInProgress] = useState(false);
-//   const router = useRouter();
 
   useEffect(() => {
     fetchUsers();
@@ -28,7 +26,7 @@ const ExplorePage = () => {
       }
       const matches = await response.json();
         console.log('Matches:', matches);
-      router.push('/matches');
+    //   router.push('/matches');
     } catch (error) {
       console.error('Error running matching:', error);
     } finally {
