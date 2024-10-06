@@ -8,6 +8,7 @@ import { faBriefcase, faProjectDiagram } from '@fortawesome/free-solid-svg-icons
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 
 export default function UserProfile() {
@@ -195,19 +196,39 @@ export default function UserProfile() {
                         )}
 
                 <TabPanel>
-                    <div className="p-4">
-                        {user.projects && user.projects.map((project, index) => (
-                            <div key={index} className="mb-4 pb-4">
-                                <h3 className="text-lg font-semibold">{project.title}</h3>
-                                <p className="text-gray-700 mt-2">{project.description}</p>
-                                {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
+                <div className="p-4">
+                {user.projects && user.projects.length > 0 ? (
+                    user.projects.map((project, index) => (
+                        <div key={index} className="mb-4 pb-4">
+                            <h3 className="text-lg font-semibold">{project.title}</h3>
+                            <p className="text-gray-700 mt-2">{project.description}</p>
+                            {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
+                            <div className="flex flex-wrap gap-2">
+                                {project.images && project.images.length > 0 && (
+                                    <div className="mt-2 grid grid-cols-3 gap-4">
+                                        {project.images.map((image, index) => (
+                                            <div key={index} className="relative">
+                                                <Image 
+                                                    src={image}
+                                                    alt={`Project image ${index + 1}`} 
+                                                    width={200} 
+                                                    height={200} 
+                                                    className="rounded-md object-cover"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                        ))}
-                        
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-gray-600 text-center py-4">No projects posted yet.</p>
+                )}
+                </div>
+                            </TabPanel>
+                        </Tabs>
                     </div>
-                </TabPanel>
-            </Tabs>
-        </div>
-    </main>
-);
-}
+                </main>
+  );
+}   
