@@ -41,9 +41,9 @@ export default function Matches() {
   return (
     <div>
       <Navbar />
-      <div className=" mx-auto px-4 py-8">
+      <div className="mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Your Matches</h1>
-        <div className="mb-8 p-4 rounded-lg ">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {currentUserMatches.map((user, userIndex) => (
             <UserCard key={userIndex} user={user} />
           ))}

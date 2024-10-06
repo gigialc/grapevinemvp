@@ -121,7 +121,7 @@ export default function Profile() {
                                 </section>
                                 <section className="mb-6">
                                     <h2 className="text-xl font-semibold mb-2">Contact</h2>
-                                    <p className="text-gray-600 mb-2">{user.email}</p>
+                                    {user.email && <p className="text-gray-600 mb-2">{user.email}</p>}
                                     {user.location && <p className="text-gray-600 mb-2">{user.location}</p>}
                                     {user.website && <p className="text-gray-600 mb-2"><a href={user.website} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">{user.website}</a></p>}
                                 </section>
