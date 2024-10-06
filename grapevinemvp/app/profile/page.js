@@ -156,17 +156,22 @@ export default function Profile() {
                                     {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
                                     {/* images */}
                                     <div className="flex flex-wrap gap-2">
-                                    {project.image && (
-                                        <div className="mb-4">
+                                    {project.images && project.images.length > 0 && (
+                                    <div className="mt-4 grid grid-cols-3 gap-4">
+                                        {project.images.map((image, index) => (
+                                        <div key={index} className="relative">
                                             <Image 
-                                            src={project.image} 
-                                            alt={`Image for ${project.title}`} 
-                                            width={300} 
+                                            src={image}
+                                            alt={`Project image ${index + 1}`} 
+                                            width={200} 
                                             height={200} 
-                                            className="rounded-lg object-cover"
+                                            className="rounded-md object-cover"
                                             />
+                                         
                                         </div>
-                                        )}
+                                        ))}
+                                    </div>
+                                    )}
                                     
                                 </div>
                                 </div>

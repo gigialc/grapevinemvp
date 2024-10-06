@@ -64,7 +64,7 @@ const ExplorePage = () => {
     <div className="explore-page mx-2 ">
       <Navbar />
       <div className="explore-page mx-4">
-        <h1>Explore Projects</h1>
+        <h1>Explore People</h1>
         <SearchBar onSearch={handleSearch} />
         <div className="flex justify-right my-8">
           <button
@@ -72,7 +72,7 @@ const ExplorePage = () => {
             disabled={matchingInProgress}
             className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
           >
-            {matchingInProgress ? 'Matching...' : 'Run Matching'}
+            {matchingInProgress ? 'Matching...' : 'Match me!'}
           </button>
         </div>
         <Filters onChange={handleFilterChange} />

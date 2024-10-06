@@ -19,11 +19,13 @@ const UserSchema = new mongoose.Schema({
     title: { type: String },
     description: { type: String },
     link: { type: String },
-    image: { type: String }
+    //array of image urls
+    images: [{ type: String }]
   }],
   projectInterest: { type: String },
   interests: [{ type: String }],
-  events: [{ type: String }]
+  events: [{ type: String }],
+  matches: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }]
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);
