@@ -63,6 +63,7 @@ export default function AddProjectContent() {
       description: project.description,
       link: project.link,
       image: project.image,
+      image: project.image, 
     };
   
     try {
@@ -99,7 +100,7 @@ export default function AddProjectContent() {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('file', file);
-formData.append('upload_preset',process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+    formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
   
     try {
       const response = await fetch(
@@ -113,7 +114,7 @@ formData.append('upload_preset',process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setProfileImage(data.secure_url);
+      setProject(prev => ({ ...prev, image: data.secure_url }));
     } catch (error) {
       console.error('Error uploading image:', error);
     }
@@ -178,35 +179,21 @@ formData.append('upload_preset',process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
                   <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                 </div>
                 <input
-                  id="images"
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
+                    id="images"
+                    type="file"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    accept="image/*"
+                    />
               </label>
             </div>
           </div>
-          {project.images && project.images.length > 0 && (
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              {project.images.map((image, index) => (
-                <div key={index} className="relative">
-                  <Image src={image} alt={`Project image ${index + 1}`} className="w-full h-32 object-cover rounded-md" />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(index)}
-                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-          <button
+                <Image 
+                src={project.image}
+                alt={user.name} 
+                className="w-20 h-20 rounded-full border-4 border-white mr-4"
+                />          
+            <button
             type="submit"
             className="w-full bg-purple-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >

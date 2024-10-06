@@ -10,6 +10,7 @@ import 'react-tabs/style/react-tabs.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle, faTools, faBriefcase, faGraduationCap, faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import Image from 'next/image';
 
 export default function Profile() {
     const { data: session, status } = useSession();
@@ -155,9 +156,17 @@ export default function Profile() {
                                     {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
                                     {/* images */}
                                     <div className="flex flex-wrap gap-2">
-                                        {user.projects.image && user.projects.image((image, index) => (
-                                            <img key={index} src={image} alt={project.title} className="w-20 h-20 rounded-lg" />
-                                        ))}
+                                    {project.image && (
+                                        <div className="mb-4">
+                                            <Image 
+                                            src={project.image} 
+                                            alt={`Image for ${project.title}`} 
+                                            width={300} 
+                                            height={200} 
+                                            className="rounded-lg object-cover"
+                                            />
+                                        </div>
+                                        )}
                                     
                                 </div>
                                 </div>
