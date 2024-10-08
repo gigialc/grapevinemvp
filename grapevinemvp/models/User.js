@@ -15,13 +15,7 @@ const UserSchema = new mongoose.Schema({
     github: { type: String },
     twitter: { type: String }
   },
-  projects: [{
-    title: { type: String },
-    description: { type: String },
-    link: { type: String },
-    //array of image urls
-    images: [{ type: String }]
-  }],
+  projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
   projectInterest: { type: String },
   interests: [{ type: String }],
   events: [{ type: String }],

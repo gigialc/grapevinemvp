@@ -13,25 +13,23 @@ export async function GET(request) {
     const email = searchParams.get('email');
     const currentUserEmail = searchParams.get('currentUserEmail');
 
-    // Case 1: Fetch a specific user by email
     if (email) {
-      const user = await User.findOne({ email }).select('-password');
+      const user = await User.findOne({ email }).select('-password').populate('projects');
       if (!user) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
       return NextResponse.json(user);
     }
 
-    // Case 2: Fetch all users except the current user
     if (currentUserEmail) {
-      const users = await User.find({ email: { $ne: currentUserEmail } }).select('-password');
+      const users = await User.find({ email: { $ne: currentUserEmail } })
+        .select('-password')
+        .populate('projects');
       return NextResponse.json(users);
     }
 
-    // Case 3: Fetch all users if no email or currentUserEmail is provided
-    const allUsers = await User.find().select('-password');
+    const allUsers = await User.find().select('-password').populate('projects');
     return NextResponse.json(allUsers);
-
   } catch (error) {
     console.error('Error fetching user(s):', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
