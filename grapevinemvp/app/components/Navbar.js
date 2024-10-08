@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
+import Image from 'next/image'
 
 const Navbar = () => {
   const { data: session, status } = useSession()
@@ -36,24 +37,39 @@ const Navbar = () => {
           </Link> */}
           {status === "authenticated" ? (
             <>
-              <Link href="/profile" className="mr-4 hover:text-purple-200">
-                Profile
-              </Link>
+             
               <Link href="/explore" className="mr-4 hover:text-purple-200">
-                Explore🧭
+                People🥂
               </Link>
-              <Link href="/matches" className="mr-4 hover:text-purple-200">
-                Matches🥂
-              </Link>
-              <Link href="/exploreProjects" className="block py-2 hover:text-purple-200">
+
+              <Link href="/exploreProjects" className="block mr-4 py-2 hover:text-purple-200">
                 Projects🤖
               </Link>
-              <button 
+              {/* make this the grapevine image chat with grapevine */}
+              <Link href="/matches1" className=" hover:text-purple-200">
+               Chat with 
+              </Link>
+              <Link href="/matches1">
+              <Image 
+                src="/images/default-avatar.png" 
+                alt="Grapevine" 
+                width={50} 
+                height={50}
+              />
+            </Link>
+             {/* make a profile avatar for this */}
+             <Link href="/profile" className="mr-4 hover:text-purple-200">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </Link>
+            
+              {/* <button 
                 onClick={() => signOut({ callbackUrl: '/' })}
                 className=" text-gray-600 font-bold py-2 px-4 rounded"
               >
                 Sign out
-              </button>
+              </button> */}
             </>
           ) : (
             <>
@@ -82,24 +98,36 @@ const Navbar = () => {
           </Link> */}
           {status === "authenticated" ? (
             <>
-              <Link href="/profile" className="block py-2 hover:text-purple-200">
-                Profile
-              </Link>
+             
               <Link href="/explore" className="block py-2 hover:text-purple-200">
-                Explore🧭
-              </Link>
-              <Link href="/matches" className="block py-2 hover:text-purple-200">
-                Matches🥂
+                People 🥂
               </Link>
               <Link href="/exploreProjects" className="block py-2 hover:text-purple-200">
                 Projects🤖
               </Link>
-              <button 
+              <Link href="/matches1" className=" hover:text-purple-200">
+               Chat with 
+              </Link>
+              <Link href="/matches1">
+              <Image 
+                src="/images/default-avatar.png" 
+                alt="Grapevine" 
+                width={50} 
+                height={50}
+              />
+            </Link>
+            <Link href="/profile" className="block py-2 hover:text-purple-200">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              Profile
+            </Link>
+              {/* <button 
                 onClick={() => signOut({ callbackUrl: '/' })}
                 className="block w-full text-left py-2 hover:text-purple-200 text-purple-600"
               >
                 Sign out 
-              </button>
+              </button> */}
               
             </>
           ) : (
