@@ -5,6 +5,9 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Navbar from '../components/Navbar'
 // import ProjectCard from '../components/ProjectCard'
+import Image from 'next/image';
+import Link from 'next/link';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 
 const ExploreProjects = () => {
   const [projects, setProjects] = useState([]);
