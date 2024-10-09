@@ -71,7 +71,7 @@ const ExploreProjects = () => {
   return (
     <div className="explore-page mx-2 mb-20">
       <Navbar />
-      <div className="px-5 relative">
+      <div className="px-5 relative mb-20">
         <div className="flex justify-between items-start mb-10">
           <h1 className="text-2xl font-bold">Explore Projects</h1>
           <button

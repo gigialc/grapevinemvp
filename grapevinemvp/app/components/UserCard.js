@@ -21,27 +21,28 @@ const UserCard = ({ user }) => {
           </div>
           <div>
             <h2 className="text-lg font-bold text-gray-800">{user.name}</h2>
-            <p className="text-sm text-gray-600 italic line-clamp-1">{user.bio || 'No bio provided'}</p>
           </div>
+        </div>
+        
+        <div className="mb-3">
+          <h3 className="text-sm font-semibold text-gray-700 mb-1">Bio</h3>
+          <p className="text-sm text-gray-600 italic">{user.bio || 'No bio provided'}</p>
         </div>
         
         <div className="mb-3">
           <h3 className="text-sm font-semibold text-gray-700 mb-1">Interests</h3>
           <div className="flex flex-wrap gap-1">
-            {user.interests.slice(0, 3).map((interest, index) => (
+            {user.interests.map((interest, index) => (
               <span key={index} className="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-0.5 rounded-full">
                 {interest}
               </span>
             ))}
-            {user.interests.length > 3 && (
-              <span className="text-xs text-gray-500">+{user.interests.length - 3} more</span>
-            )}
           </div>
         </div>
         
         <div>
           <h3 className="text-sm font-semibold text-gray-700 mb-1">Skills</h3>
-          <p className="text-sm text-gray-600 line-clamp-1">{user.skills.join(', ')}</p>
+          <p className="text-sm text-gray-600">{user.skills.join(', ')}</p>
         </div>
       </div>
     </Link>
