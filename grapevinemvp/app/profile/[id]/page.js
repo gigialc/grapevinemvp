@@ -226,10 +226,9 @@ export default function UserProfile() {
                     <p className="text-gray-600 text-center py-4">No projects posted yet.</p>
                 )}
                 </div>
-            </TabPanel>
-         </Tabs>
-    </div>
-    </main>
-    
+                            </TabPanel>
+                        </Tabs>
+                    </div>
+                </main>
   );
 }   
