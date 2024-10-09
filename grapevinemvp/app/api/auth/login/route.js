@@ -29,17 +29,18 @@ export async function POST(request) {
 
 async function validateUser(email, password) {
     try {
-        await connectDB(); // Make sure this function exists and works
+        await connectDB();
+        console.log('Database connected');
 
         const user = await User.findOne({ email }).select('+password');
-        console.log('User found:', user ? 'Yes' : 'No'); // Add this log
+        console.log('User found:', user ? user.email : 'No user found');
 
         if (!user) {
             return { success: false, message: "User not found" };
         }
 
         const isValidPassword = await bcrypt.compare(password, user.password);
-        console.log('Password valid:', isValidPassword); // Add this log
+        console.log('Password valid:', isValidPassword);
 
         if (!isValidPassword) {
             return { success: false, message: "Invalid password" };

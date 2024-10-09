@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react'
 import Navbar from '../components/Navbar'
 import UserCard from '../components/UserCard'
 import BubbleFilter from '../components/BubbleFilter'
-import SearchBar from '../components/SearchBar'
 
 const ExplorePage = () => {
   const [users, setUsers] = useState([])
@@ -15,7 +14,7 @@ const ExplorePage = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const { data: session } = useSession()
 
-  const MAX_SKILLS_DISPLAYED = 10; 
+  const MAX_SKILLS_DISPLAYED = 10;
 
   useEffect(() => {
     fetchUsers()
@@ -85,16 +84,17 @@ const ExplorePage = () => {
       <div className="explore-page mx-4">
         <div className="my-3">
           <h1 className="text-2xl font-bold mb-4">Explore People</h1>
-          {/* <SearchBar onSearch={handleSearch} /> */}
           <BubbleFilter
             skills={allSkills.slice(0, MAX_SKILLS_DISPLAYED)}
             selectedSkills={selectedSkills}
             onSkillToggle={handleSkillToggle}
           />
         </div>
-        <div className="user-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="user-grid columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
           {filteredUsers.map(user => (
-            <UserCard key={user._id} user={user} />
+            <div key={user._id} className="mb-4 break-inside-avoid">
+              <UserCard user={user} />
+            </div>
           ))}
         </div>
       </div>

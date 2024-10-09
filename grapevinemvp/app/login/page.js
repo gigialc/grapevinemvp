@@ -13,21 +13,23 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    const result = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-    });
-
-    if (result.error) {
-      setError(result.error);
-    } else {
-      router.push('/explore'); // Redirect to profile page on successful login
+    try {
+      const result = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
+      });
+      if (result.error) {
+        console.error('Authentication error:', result.error);
+        setError(result.error);
+      } else {
+        router.push('/exploreProjects'); // Redirect to the explore projects page
+      }
+    } catch (error) {
+      console.error('Sign in error:', error);
+      setError('An unexpected error occurred');
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
