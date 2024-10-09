@@ -33,7 +33,7 @@ export default function AddProjectContent() {
 
   useEffect(() => {
     fetchProjects();
-  }, [session]);
+  }, [session, fetchProjects]);
 
 
   const fetchProjects = async () => {
