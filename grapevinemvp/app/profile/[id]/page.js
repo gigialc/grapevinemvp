@@ -158,16 +158,7 @@ export default function UserProfile() {
                     )}
                     
                 </div>
-<<<<<<< HEAD
-                            </TabPanel>
-                        </Tabs>
-                    </div>
-                </main>
-  );
-}   
-=======
             </div>
         </main>
     );
 }
->>>>>>> gigibot

@@ -5,15 +5,15 @@ import Navbar from '../components/Navbar';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 
 const ExploreProjects = () => {
   const [projects, setProjects] = useState([]);
   const { data: session } = useSession();
-<<<<<<< HEAD
-=======
   const router = useRouter();
   const [user, setUser] = useState(null);
->>>>>>> gigibot
+
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -42,64 +42,31 @@ const ExploreProjects = () => {
     return project.title && (project.description || (project.images && project.images.length > 0));
   };
 
-<<<<<<< HEAD
+  const handleCollaborationRequest = async (projectId) => {
+    try {
+      const response = await fetch(`/api/project/${projectId}/collaborate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId: session.user.id })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to send collaboration request');
+      }
+      router.push('/projects');
+    } catch (error) {
+      console.error('Error sending collaboration request:', error);
+    }
+  }
+
+  
   return (
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <p className="text-3xl font-bold mb-8 text-left text-purple-800">Explore Projects</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-=======
-  const handleAddProject = () => {
-    router.push('/add-project');
-  };
-
-  const handleCollaborationRequest = async (project) => {
-    if (!session?.user) {
-      alert("Please sign in to request collaboration.");
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/collaboration-request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          projectId: project._id,
-          userId: session.user.id,
-          projectOwnerId: project.userId,
-        }),
-      });
-
-      if (response.ok) {
-        alert("Collaboration request sent successfully!");
-      } else {
-        throw new Error('Failed to send collaboration request');
-      }
-    } catch (error) {
-      console.error('Error sending collaboration request:', error);
-      alert("Failed to send collaboration request. Please try again.");
-    }
-  };
-
-
-  return (
-    <div className="bg-gray-100">
-      <Navbar />
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-purple-800">Explore Startups and Projects</h1>
-          <button
-            onClick={handleAddProject}
-            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded text-sm transition duration-300"
-          >
-            Add Project
-          </button>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
->>>>>>> gigibot
           {projects.map((project, index) => (
             <ProjectCard 
               key={index} 
