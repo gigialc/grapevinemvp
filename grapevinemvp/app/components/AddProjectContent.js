@@ -31,9 +31,6 @@ export default function AddProjectContent() {
     setProject(prev => ({ ...prev, [name]: value }));
   };
 
-  useEffect(() => {
-    fetchProjects();
-  }, [session, fetchProjects]);
 
 
   const fetchProjects = async () => {
@@ -50,6 +47,10 @@ export default function AddProjectContent() {
       }
     }
   };
+
+  useEffect(() => {
+    fetchProjects();
+  }, [session, fetchProjects]);
 
   const handleRemoveImage = (index) => {
     setProject(prev => ({

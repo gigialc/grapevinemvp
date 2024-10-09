@@ -60,12 +60,24 @@ const ExploreProjects = () => {
     }
   }
 
-  
+  const handleAddProject = () => {
+    router.push('/add-project');
+  }
+
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <p className="text-3xl font-bold mb-8 text-left text-purple-800">Explore Projects</p>
+        <div className="flex justify-between items-center mb-8">
+          <p className="text-3xl font-bold text-purple-800">Explore Projects</p>
+          <button
+            onClick={handleAddProject}
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-1 px-4 rounded transition duration-300"
+          >
+            Add Project
+          </button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
             <ProjectCard 

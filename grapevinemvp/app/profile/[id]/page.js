@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
@@ -116,7 +115,7 @@ export default function UserProfile() {
                     </div>
                     {user.projects && user.projects.length > 0 ? (
                         user.projects.map((project, index) => (
-                            <div key={index} className="mb-6 pb-6 border-b border-gray-200 last:border-b-0">
+                            <div key={index} className="mb-6 pb-6 border-b last:border-b-0">
                                  {project.seekingCollaborators && (
                             <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded mb-5">
                                 Hiring
