@@ -70,6 +70,8 @@ export default function AddProjectContent() {
       description: project.description,
       link: project.link,
       images: project.images,
+      seekingCollaborators: project.seekingCollaborators,
+      collaborationDetails: project.collaborationDetails
     };
   
     try {
@@ -95,7 +97,7 @@ export default function AddProjectContent() {
       setUser(updatedUser);
   
       // Clear the form
-      setProject({ title: '', description: '', link: '', images: [] });
+      setProject({ title: '', description: '', link: '', images: [], seekingCollaborators: false, collaborationDetails: '' });
   
     } catch (error) {
       console.error('Error updating projects:', error);
@@ -225,6 +227,34 @@ export default function AddProjectContent() {
                 ))}
             </div>
             )}
+
+                <div className="mb-4 mt-10">
+                <label className="flex items-center">
+                    <input
+                    type="checkbox"
+                    checked={project.seekingCollaborators}
+                    onChange={(e) => setProject({...project, seekingCollaborators: e.target.checked})}
+                    className="mr-2"
+                    />
+                    Looking for team members?
+                </label>
+                </div>
+                {project.seekingCollaborators && (
+                <div className="mb-4">
+                    <label htmlFor="collaborationDetails" className="block text-sm font-medium text-gray-700 mb-1">
+                    What are you looking for in a team member?
+                    </label>
+                    <textarea
+                    id="collaborationDetails"
+                    name="collaborationDetails"
+                    value={project.collaborationDetails}
+                    onChange={(e) => setProject({...project, collaborationDetails: e.target.value})}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                    placeholder=" Describe the skills or roles you're looking for in a team member"
+                    />
+                </div>
+                )}
+
             </div>
             <button
             type="submit"

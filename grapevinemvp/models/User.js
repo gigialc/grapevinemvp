@@ -20,7 +20,9 @@ const UserSchema = new mongoose.Schema({
     description: { type: String },
     link: { type: String },
     //array of image urls
-    images: [{ type: String }]
+    images: [{ type: String }],
+    seekingCollaborators: { type: Boolean, default: false },
+    collaborationDetails: { type: String }
   }],
   projectInterest: { type: String },
   interests: [{ type: String }],

@@ -43,13 +43,13 @@ const Navbar = () => {
               </Link>
 
               <Link href="/exploreProjects" className="block mr-4 py-2 hover:text-purple-200">
-                Projects🤖
+                Explore🤖
               </Link>
               {/* make this the grapevine image chat with grapevine */}
-              <Link href="/matches1" className=" hover:text-purple-200">
-               Chat with 
+              <Link href="/matches" className=" hover:text-purple-200">
+               Networking
               </Link>
-              <Link href="/matches1">
+              <Link href="/matches">
               <Image 
                 src="/images/default-avatar.png" 
                 alt="Grapevine" 
@@ -103,12 +103,12 @@ const Navbar = () => {
                 People 🥂
               </Link>
               <Link href="/exploreProjects" className="block py-2 hover:text-purple-200">
-                Projects🤖
+                Explore🤖
               </Link>
-              <Link href="/matches1" className=" hover:text-purple-200">
-               Chat with 
+              <Link href="/matches" className=" hover:text-purple-200">
+              Networking
               </Link>
-              <Link href="/matches1">
+              <Link href="/matches">
               <Image 
                 src="/images/default-avatar.png" 
                 alt="Grapevine" 
