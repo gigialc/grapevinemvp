@@ -85,7 +85,7 @@ export default function StartupPeopleJobBoard() {
                 <span className="text-sm text-muted-foreground">Team of {job.teamSize}</span>
               </div>
               <Separator className="my-4" />
-              <h4 className="font-semibold mb-2">Key People You'll Work With:</h4>
+              <h4 className="font-semibold mb-2">Key People You will Work With:</h4>
               <div className="flex flex-col space-y-3">
                 {job.keyPeople.map((person, index) => (
                   <div key={index} className="flex items-center space-x-3">
