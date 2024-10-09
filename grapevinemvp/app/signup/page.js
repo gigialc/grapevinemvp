@@ -85,7 +85,7 @@ export default function SignUp() {
         projects,
         projectInterest,
         interests: interests.filter((interest) => interest.trim() !== ""),
-        events: tags, // Use the selected tags as events
+        // events: tags, // Use the selected tags as events
       };
 
       const response = await fetch("/api/auth/signup", {
@@ -382,7 +382,7 @@ export default function SignUp() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-700">
+                {/* <label className="block text-sm font-medium text-purple-700">
                   Events
                 </label>
                 <div
@@ -429,9 +429,9 @@ export default function SignUp() {
                       >
                         {tag}
                       </div>
-                    ))}
-                  </div>
-                )}
+                    ))} */}
+                  {/* </div> */}
+                {/* )} */}
               </div>
             </div>
           )}
