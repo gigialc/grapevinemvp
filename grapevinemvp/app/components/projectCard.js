@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 const ProjectCard = ({ project, onCollaborationRequest, isCurrentUser }) => (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105">
       <div className="p-6">
