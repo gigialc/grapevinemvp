@@ -17,7 +17,7 @@ const UserSchema = new mongoose.Schema({
   },
   projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
   interests: [{ type: String }],
-  events: [{ type: String }],
+  // events: [{ type: String }],
   matches: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }]
 }, { timestamps: true });
 
