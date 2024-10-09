@@ -53,7 +53,7 @@ export default function Profile() {
     const isOwnProfile = session?.user?.email === user.email;
 
     return (
-        <main className="container mx-auto px-4 bg-gray-100 min-h-screen">
+        <main className="mx-auto px-4 min-h-screen">
             <Navbar />
             <div className="rounded-lg overflow-hidden my-4 md:my-8 shadow-md bg-white">
                 <div className="p-4 md:p-6">

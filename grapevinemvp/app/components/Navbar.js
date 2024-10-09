@@ -15,10 +15,12 @@ const Navbar = () => {
 
   return (
     <nav className="text-white p-4">
-      <div className="container mx-auto flex justify-between items-center">
+    <div className="container mx-auto flex justify-between items-center">
+      <div className="flex-1">
         <Link href="/explore" className="text-2xl font-bold">
-          Grapevine 🍇
+          Grapevine 
         </Link>
+      </div>
         
         {/* Mobile menu button */}
         <button 
@@ -46,19 +48,19 @@ const Navbar = () => {
                 Explore🤖
               </Link>
               {/* make this the grapevine image chat with grapevine */}
-              <Link href="/matches" className=" hover:text-purple-200">
-               Networking
+              {/* <Link href="/matches" className="hover:text-purple-200">
+               
               </Link>
               <Link href="/matches">
               <Image 
                 src="/images/default-avatar.png" 
                 alt="Grapevine" 
-                width={50} 
-                height={50}
+                width={20} 
+                height={20}
               />
-            </Link>
+            </Link> */}
              {/* make a profile avatar for this */}
-             <Link href="/profile" className="mr-4 hover:text-purple-200">
+             <Link href="/profile" className="ml-3 hover:text-purple-200">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
@@ -105,23 +107,25 @@ const Navbar = () => {
               <Link href="/exploreProjects" className="block py-2 hover:text-purple-200">
                 Explore🤖
               </Link>
-              <Link href="/matches" className=" hover:text-purple-200">
-              Networking
-              </Link>
-              <Link href="/matches">
-              <Image 
-                src="/images/default-avatar.png" 
-                alt="Grapevine" 
-                width={50} 
-                height={50}
-              />
-            </Link>
-            <Link href="/profile" className="block py-2 hover:text-purple-200">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {/* <div className="flex items-center space-x-4">
+                <Link href="/matches" className="flex items-center hover:text-purple-200">
+                  <span className="mr-2">Networking</span>
+                  <Image 
+                    src="/images/default-avatar.png" 
+                    alt="Grapevine" 
+                    width={20} 
+                    height={20}
+                  />
+                </Link>
+                </div> */}
+                <div className="flex items-center space-x-4">
+                <Link href="/profile" className="flex items-center py-2 hover:text-purple-200">
+              <span>Profile</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              Profile
             </Link>
+          </div>
               {/* <button 
                 onClick={() => signOut({ callbackUrl: '/' })}
                 className="block w-full text-left py-2 hover:text-purple-200 text-purple-600"
