@@ -2,43 +2,46 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/mongodb';
 import User from '@/models/User';
 import { ObjectId } from 'mongodb';
-// import { useState, useEffect } from 'react';
 
 export const dynamic = 'force-dynamic';
 
+// GET request handler to retrieve users or a specific user
 export async function GET(request) {
   try {
     await connectDB();
+
+    // Extract search parameters from the request URL
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
     const currentUserEmail = searchParams.get('currentUserEmail');
 
-    // Case 1: Fetch a specific user by email
+    // Fetch user by email if 'email' query param is provided
     if (email) {
-      const user = await User.findOne({ email }).select('-password');
+      const user = await User.findOne({ email }).select('-password').populate('projects');
       if (!user) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
       return NextResponse.json(user);
     }
 
-    // Case 2: Fetch all users except the current user
+    // Fetch all users except the current user if 'currentUserEmail' param is provided
     if (currentUserEmail) {
-      const users = await User.find({ email: { $ne: currentUserEmail } }).select('-password');
+      const users = await User.find({ email: { $ne: currentUserEmail } })
+        .select('-password')
+        .populate('projects');
       return NextResponse.json(users);
     }
 
-    // Case 3: Fetch all users if no email or currentUserEmail is provided
-    const allUsers = await User.find().select('-password');
+    // Fetch all users if no specific query params are provided
+    const allUsers = await User.find().select('-password').populate('projects');
     return NextResponse.json(allUsers);
-
   } catch (error) {
     console.error('Error fetching user(s):', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
-
+// PUT request handler to update a user or add a project to the user's project list
 export async function PUT(request) {
   try {
     await connectDB();
@@ -46,13 +49,18 @@ export async function PUT(request) {
     const { email, project, ...updateData } = data;
 
     let updateOperation;
+
+    // If a project is provided, prepare to add the project to the user's project list
     if (project) {
-      // Adding a new project
+      const newProject = await Project.create({
+        ...project,
+        _id: new ObjectId(),
+        createdBy: await User.findOne({ email }).select('_id')
+      });
       updateOperation = {
-        $push: { projects: { ...project, _id: new ObjectId() } }
+        $push: { projects: newProject._id }
       };
-    } else if (Object.keys(updateData).length > 0) {
-      // General user update
+    } else if (Object.keys(updateData).length > 0) { // general user update
       updateOperation = { $set: updateData };
     } else {
       return NextResponse.json({ error: 'No update data provided' }, { status: 400 });

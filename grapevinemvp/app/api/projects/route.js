@@ -1,26 +1,117 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/mongodb';
-import User from '@/models/User';
+import User from '@/models/User'; 
+import Project from '@/models/Project';
+import { ObjectId } from 'mongodb';
 
-export async function POST(req) {
+// Tag validation
+const validTags = [
+  'Tech', 'Finance', 'Art', 'Music', 'Health & Wellness', 'Education',
+  'Environmental', 'Nonprofit', 'Entrepreneurship', 'Writing & Literature',
+  'Entertainment', 'Gaming', 'Social Impact', 'Science', 'Fashion'
+];
+
+function validateTags(tags) {
+  return tags.every(tag => validTags.includes(tag));
+}
+
+// Create a new Project (POST request handler)
+export async function POST(request) {
   try {
     await connectDB();
-    const { email } = req.session.user; // Assuming you have session middleware
-    const projectData = await req.json();
 
-    const user = await User.findOneAndUpdate(
-      { email },
-      { $push: { [projectData.type === 'current' ? 'currentProjects' : 'pastProjects']: projectData } },
-      { new: true }
-    );
+    const { email, project } = await request.json();
 
+    if (!validateTags(project.tags)) {
+      return NextResponse.json({ error: 'Invalid tags provided' }, { status: 400 });
+    }
+
+    // Find the user by email to associate them as the creator of the project
+    const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ message: 'Project added successfully' });
+    // Create a new project document, associating it with the user (creator)
+    const newProject = await Project.create({
+      ...project,
+      createdBy: user._id, // Associate the user by their ObjectId
+    });
+
+    // Update the user's document to include Project
+    const updatedUser = await User.findOneAndUpdate(
+      { email: email },
+      { $push: { projects: newProject._id } },
+      { new: true, runValidators: true } 
+    );
+
+    if (!updatedUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(updatedUser);
   } catch (error) {
     console.error('Error adding project:', error);
     return NextResponse.json({ error: 'Failed to add project' }, { status: 500 });
+  }
+}
+
+// Edit an existing Project (PUT request handler)
+export async function PUT(request) {
+  try {
+    await connectDB();
+
+    const { projectId, projectUpdates } = await request.json();
+
+    if (projectUpdates.tags && !validateTags(projectUpdates.tags)) {
+      return NextResponse.json({ error: 'Invalid tags provided' }, { status: 400 });
+    }
+
+    const updatedProject = await Project.findByIdAndUpdate(
+      projectId,
+      { ...projectUpdates },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedProject) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(updatedProject);
+  } catch (error) {
+    console.error('Error updating project:', error);
+    return NextResponse.json({ error: 'Failed to update project' }, { status: 500 });
+  }
+}
+
+// Delete an existing Project (DELETE request handler)
+export async function DELETE(request) {
+  try {
+    await connectDB();
+
+    const { projectId, email } = await request.json();
+
+    // Find the project by its ID and delete it from the database
+    const deletedProject = await Project.findByIdAndDelete(projectId);
+
+    if (!deletedProject) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+
+    // Remove the project reference from the user's projects array
+    const updatedUser = await User.findOneAndUpdate(
+      { email: email },
+      { $pull: { projects: new ObjectId(projectId) } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Project deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
   }
 }

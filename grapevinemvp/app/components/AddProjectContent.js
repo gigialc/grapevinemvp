@@ -1,37 +1,28 @@
 'use client'
 
-import { use, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Navbar from '../components/Navbar';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from "next-auth/react";
-import { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation'; // Updated import
+import Navbar from '../components/Navbar';
 import Image from 'next/image';
-import { Suspense } from 'react'
 
 export default function AddProjectContent() {
   const searchParams = useSearchParams();
   const projectType = searchParams.get('type');
+  const projectId = searchParams.get('projectID');
   const router = useRouter();
-  const [images, setImages] = useState('');
   const { data: session } = useSession();
-  const [projects, setProjects] = useState([]);
-  const [user, setUser] = useState(null);
-  const [profileImage, setProfileImage] = useState(null);
+  const [images, setImages] = useState(''); // is this needed?
+  const [profileImage, setProfileImage] = useState(null); // is this needed?
   
   const [project, setProject] = useState({
     title: '',
     description: '',
     link: '',
     images: [],
+    seekingCollaborators: false,
+    collaborationDetails: '',
   });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProject(prev => ({ ...prev, [name]: value }));
-  };
-
-
 
   const fetchProjects = async () => {
     if (session?.user?.email) {
@@ -59,6 +50,11 @@ export default function AddProjectContent() {
     }));
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProject(prev => ({ ...prev, [name]: value }));
+  };
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!session || !session.user) {
@@ -138,7 +134,6 @@ export default function AddProjectContent() {
 
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
       <div className="max-w-2xl mx-auto mt-8 bg-white rounded-lg shadow-md p-6">
@@ -266,6 +261,5 @@ export default function AddProjectContent() {
         </form>
       </div>
     </div>
-    </Suspense>
   );
 }
