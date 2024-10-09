@@ -16,7 +16,6 @@ const UserSchema = new mongoose.Schema({
     twitter: { type: String }
   },
   projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
-  projectInterest: { type: String },
   interests: [{ type: String }],
   events: [{ type: String }],
   matches: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }]

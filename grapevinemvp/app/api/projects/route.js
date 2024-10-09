@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/mongodb';
 import User from '@/models/User';
-import Project from '@/models/Project'; // Import new Project model
+import Project from '@/models/Project'; //
 import { ObjectId } from 'mongodb';
 
 export async function POST(request) {

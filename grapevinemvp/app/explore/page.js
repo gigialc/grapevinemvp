@@ -17,7 +17,6 @@ const ExplorePage = () => {
     fetchUsers();
   }, [session]);
 
-
   const runMatching = async () => {
     setMatchingInProgress(true);
     try {
@@ -65,7 +64,7 @@ const ExplorePage = () => {
       <div className="explore-page mx-4">
         <h1>Explore People</h1>
         <SearchBar onSearch={handleSearch} />
-        <div className="flex justify-right my-8">
+        {/* <div className="flex justify-right my-8">
           <button
             onClick={runMatching}
             disabled={matchingInProgress}
@@ -74,7 +73,7 @@ const ExplorePage = () => {
             {matchingInProgress ? 'Matching...' : 'Match me!'}
           </button>
         </div>
-        <Filters onChange={handleFilterChange} />
+        <Filters onChange={handleFilterChange} /> */}
         <div className="user-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {users.map(user => (
             <UserCard key={user._id} user={user} />
