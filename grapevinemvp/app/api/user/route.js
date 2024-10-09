@@ -2,17 +2,20 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/mongodb';
 import User from '@/models/User';
 import { ObjectId } from 'mongodb';
-// import { useState, useEffect } from 'react';
 
 export const dynamic = 'force-dynamic';
 
+// GET request handler to retrieve users or a specific user
 export async function GET(request) {
   try {
     await connectDB();
+
+    // Extract search parameters from the request URL
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
     const currentUserEmail = searchParams.get('currentUserEmail');
 
+    // Fetch user by email if 'email' query param is provided
     if (email) {
       const user = await User.findOne({ email }).select('-password').populate('projects');
       if (!user) {
@@ -21,6 +24,7 @@ export async function GET(request) {
       return NextResponse.json(user);
     }
 
+    // Fetch all users except the current user if 'currentUserEmail' param is provided
     if (currentUserEmail) {
       const users = await User.find({ email: { $ne: currentUserEmail } })
         .select('-password')
@@ -28,6 +32,7 @@ export async function GET(request) {
       return NextResponse.json(users);
     }
 
+    // Fetch all users if no specific query params are provided
     const allUsers = await User.find().select('-password').populate('projects');
     return NextResponse.json(allUsers);
   } catch (error) {
@@ -36,7 +41,7 @@ export async function GET(request) {
   }
 }
 
-
+// PUT request handler to update a user or add a project to the user's project list
 export async function PUT(request) {
   try {
     await connectDB();
@@ -44,13 +49,18 @@ export async function PUT(request) {
     const { email, project, ...updateData } = data;
 
     let updateOperation;
+
+    // If a project is provided, prepare to add the project to the user's project list
     if (project) {
-      // Adding a new project
+      const newProject = await Project.create({
+        ...project,
+        _id: new ObjectId(),
+        createdBy: await User.findOne({ email }).select('_id')
+      });
       updateOperation = {
-        $push: { projects: { ...project, _id: new ObjectId() } }
+        $push: { projects: newProject._id }
       };
-    } else if (Object.keys(updateData).length > 0) {
-      // General user update
+    } else if (Object.keys(updateData).length > 0) { // general user update
       updateOperation = { $set: updateData };
     } else {
       return NextResponse.json({ error: 'No update data provided' }, { status: 400 });
