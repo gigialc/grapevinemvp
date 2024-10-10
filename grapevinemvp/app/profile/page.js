@@ -21,12 +21,7 @@ export default function Profile() {
     const { data: session, status } = useSession();
     const [user, setUser] = useState(null);
     const router = useRouter();
-
-    useEffect(() => {
-        if (session?.user?.email) {
-            fetchUserData(session.user.email);
-        }
-    }, [session]);
+    const [projects, setProjects] = useState([]);
 
     const fetchUserData = async (email) => {
         try {
@@ -41,6 +36,27 @@ export default function Profile() {
             console.error('Error fetching user data:', error);
         }
     };
+
+    useEffect(() => {
+        if (session?.user?.email) {
+            fetchUserData(session.user.email);
+            fetchProjects(session.user.email);
+        }
+    }, [session]);
+    
+    const fetchProjects = async (email) => {
+        try {
+            const response = await fetch(`/api/projects?email=${email}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch projects');
+            }
+            const data = await response.json();
+            setProjects(data);
+        } catch (error) {
+            console.error('Error fetching projects:', error);
+        }
+    };
+
 
     if (status === 'loading' || !user) {
         return <div>Loading...</div>;
@@ -105,24 +121,25 @@ export default function Profile() {
             </div>
 
             <div className="rounded-lg overflow-hidden my-4 md:my-8 ">
-                <div className="p-4 md:p-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-bold">Projects</h2>
-                        {isOwnProfile && (
-                            <button 
-                                onClick={handleAddProject}
-                                className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded text-sm transition duration-300"
-                            >
-                                Add Project
-                            </button>
-                        )}
-                    </div>
-                    {user.projects && user.projects.map((project, index) => (
+            <div className="p-4 md:p-6">
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold">Projects</h2>
+                    {isOwnProfile && (
+                        <button 
+                            onClick={handleAddProject}
+                            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded text-sm transition duration-300"
+                        >
+                            Add Project
+                        </button>
+                    )}
+                </div>
+                {projects.length > 0 ? (
+                    projects.map((project, index) => (
                         <div key={index} className="mb-6 pb-6 border-b border-gray-200 last:border-b-0">
                             {project.seekingCollaborators && (
-                            <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 mb-5 rounded">
-                                Hiring
-                            </span>
+                                <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 mb-5 rounded">
+                                    Hiring
+                                </span>
                             )}
                             
                             <h3 className="text-xl font-semibold">{project.title}</h3>
@@ -130,11 +147,11 @@ export default function Profile() {
                             {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
                             {project.images && project.images.length > 0 && (
                                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                    {project.images.map((image, index) => (
-                                        <div key={index} className="relative">
+                                    {project.images.map((image, imageIndex) => (
+                                        <div key={imageIndex} className="relative">
                                             <Image 
                                                 src={image}
-                                                alt={`Project image ${index + 1}`} 
+                                                alt={`Project image ${imageIndex + 1}`} 
                                                 width={200} 
                                                 height={200} 
                                                 className="rounded-md object-cover w-full h-auto"
@@ -144,9 +161,14 @@ export default function Profile() {
                                 </div>
                             )}
                         </div>
-                    ))}
-                </div>
+                    ))
+                ) : (
+                    <p>No projects found.</p>
+                )}
             </div>
-        </main>
+        </div>
+    </main>
+
+
     );
 }

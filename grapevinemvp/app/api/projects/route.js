@@ -4,6 +4,7 @@ import User from '@/models/User';
 import Project from '@/models/Project';
 import { ObjectId } from 'mongodb';
 
+
 // Tag validation
 const validTags = [
   'Tech', 'Finance', 'Art', 'Music', 'Health & Wellness', 'Education',
@@ -114,4 +115,24 @@ export async function DELETE(request) {
     console.error('Error deleting project:', error);
     return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
   }
+}
+
+export async function GET(request) {
+    try {
+      await connectDB();
+  
+      // Fetch all projects and populate the 'createdBy' field with user data
+      const projects = await Project.find().populate('createdBy', 'name email');
+  
+      // Map the projects to include the userName
+      const projectsWithUserName = projects.map(project => ({
+        ...project.toObject(),
+        userName: project.createdBy ? project.createdBy.name : 'Unknown User'
+      }));
+  
+      return NextResponse.json(projectsWithUserName);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
 }

@@ -22,6 +22,11 @@ export default function AddProjectContent() {
     images: [],
     seekingCollaborators: false,
     collaborationDetails: '',
+    tags: [],
+    createdBy: '',
+    createdAt: '',
+    updatedAt: '',
+    collaborators: [],
   });
 
   const fetchProjects = async () => {
@@ -68,11 +73,16 @@ export default function AddProjectContent() {
       link: project.link,
       images: project.images,
       seekingCollaborators: project.seekingCollaborators,
-      collaborationDetails: project.collaborationDetails
+      collaborationDetails: project.collaborationDetails,
+      tags: project.tags,
+      createdBy: session.user.email,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      collaborators: project.collaborators,
     };
   
     try {
-      const response = await fetch('/api/user/projects', {
+      const response = await fetch('/api/projects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,19 +97,30 @@ export default function AddProjectContent() {
         throw new Error('Failed to update user document');
       }
   
-      const updatedUser = await response.json();
+    //   const updatedUser = await response.json();
       console.log('Project added successfully', updatedUser);
   
-      // Update local state if necessary
-      setUser(updatedUser);
+    //   // Update local state if necessary
+    //   setUser(updatedUser);
   
       // Clear the form
-      setProject({ title: '', description: '', link: '', images: [], seekingCollaborators: false, collaborationDetails: '' });
+      setProject({ title: '', description: '', link: '', images: [], seekingCollaborators: false, collaborationDetails: '', tags: [] , createdBy: '', createdAt: '', updatedAt: '', collaborators: [] });
   
     } catch (error) {
       console.error('Error updating projects:', error);
     }
   };
+
+  const handleTagToggle = (tag) => {
+    setProject(prev => ({
+        ...prev,
+        tags: prev.tags.includes(tag)
+
+            ? prev.tags.filter(t => t !== tag)
+            : [...prev.tags, tag]
+    }));
+    };
+
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
@@ -166,7 +187,7 @@ export default function AddProjectContent() {
             />
           </div>
           <div>
-            <label htmlFor="link" className="block text-sm font-medium text-gray-700 mb-1">Project Link</label>
+            <label htmlFor="link" className="block text-sm font-medium text-gray-700 mb-1">Project Links</label>
             <input
               type="url"
               id="link"
@@ -178,85 +199,104 @@ export default function AddProjectContent() {
             />
           </div>
           <div>
-          <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Project Images</label>
             <div className="flex items-center justify-center w-full">
-                <label htmlFor="images" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <label htmlFor="images" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <svg className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                    <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                  </svg>
+                  <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                 </div>
                 <input
-                    id="images"
-                    type="file"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    accept="image/*"
-                    multiple
+                  id="images"
+                  type="file"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  accept="image/*"
+                  multiple
                 />
-                </label>
+              </label>
             </div>
-            </div>
-
-            {project.images && project.images.length > 0 && (
+          </div>
+  
+          {project.images && project.images.length > 0 && (
             <div className="mt-4 grid grid-cols-3 gap-4">
-                {project.images.map((image, index) => (
+              {project.images.map((image, index) => (
                 <div key={index} className="relative">
-                    <Image 
+                  <Image 
                     src={image}
                     alt={`Project image ${index + 1}`} 
                     width={100}
                     height={100}
                     className="rounded-md object-cover"
-                    />
-                    <button
+                  />
+                  <button
                     type="button"
                     onClick={() => handleRemoveImage(index)}
                     className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs"
-                    >
+                  >
                     X
-                    </button>
+                  </button>
                 </div>
-                ))}
+              ))}
             </div>
-            )}
-
-                <div className="mb-4 mt-10">
-                <label className="flex items-center">
-                    <input
-                    type="checkbox"
-                    checked={project.seekingCollaborators}
-                    onChange={(e) => setProject({...project, seekingCollaborators: e.target.checked})}
-                    className="mr-2"
-                    />
-                    Looking for team members?
-                </label>
-                </div>
-                {project.seekingCollaborators && (
-                <div className="mb-4">
-                    <label htmlFor="collaborationDetails" className="block text-sm font-medium text-gray-700 mb-1">
-                    What are you looking for in a team member?
-                    </label>
-                    <textarea
-                    id="collaborationDetails"
-                    name="collaborationDetails"
-                    value={project.collaborationDetails}
-                    onChange={(e) => setProject({...project, collaborationDetails: e.target.value})}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder=" Describe the skills or roles you're looking for in a team member"
-                    />
-                </div>
-                )}
-
+          )}
+  
+          <div className="mb-4 mt-10">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={project.seekingCollaborators}
+                onChange={(e) => setProject({...project, seekingCollaborators: e.target.checked})}
+                className="mr-2"
+              />
+              Looking for team members?
+            </label>
+          </div>
+          {project.seekingCollaborators && (
+            <div className="mb-4">
+              <label htmlFor="collaborationDetails" className="block text-sm font-medium text-gray-700 mb-1">
+                What are you looking for in a team member?
+              </label>
+              <textarea
+                id="collaborationDetails"
+                name="collaborationDetails"
+                value={project.collaborationDetails}
+                onChange={(e) => setProject({...project, collaborationDetails: e.target.value})}
+                className="w-full p-2 border border-gray-300 rounded-md"
+                placeholder="Describe the skills or roles you're looking for in a team member"
+              />
             </div>
-            <button
+          )}
+  
+         {/* tags that you can select in bubbles */}
+         <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Tag your project for people to find you!</label>
+          <div className="flex flex-wrap gap-2">
+            {['Tech', 'Finance', 'Art', 'Music', 'Health & Wellness', 'Education', 'Environmental', 'Nonprofit', 'Entrepreneurship', 'Writing & Literature', 'Entertainment', 'Social Impact', 'Science', 'Fashion', 'Social Media'].map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => handleTagToggle(tag)}
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                  project.tags.includes(tag)
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+           
+          <button
             type="submit"
             className="w-full bg-purple-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            Add
+            Add Project
           </button>
         </form>
       </div>
