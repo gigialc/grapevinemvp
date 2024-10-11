@@ -13,10 +13,12 @@ export default function UserProfile() {
     const [user, setUser] = useState(null);
     const router = useRouter();
     const { id } = useParams();
+    const [projects, setProjects] = useState([]);
 
     useEffect(() => {
         if (id) {
             fetchUserData(id);
+            fetchProjects(id);
         }
     }, [id]);
 
@@ -33,6 +35,20 @@ export default function UserProfile() {
             console.error('Error fetching user data:', error);
         }
     };
+
+    const fetchProjects = async (userId) => {
+        try {
+            const response = await fetch(`/api/projects?userId=${userId}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch projects');
+            }
+            const data = await response.json();
+            setProjects(data);
+        } catch (error) {
+            console.error('Error fetching projects:', error);
+        }
+    };
+    
 
     if (status === 'loading' || !user) {
         return <div>Loading...</div>;
@@ -63,10 +79,7 @@ export default function UserProfile() {
                                     <FontAwesomeIcon icon={faGraduationCap} className="mr-2 text-purple-600" />
                                     {user.education}
                                 </p>
-                                <p className="text-gray-600 flex items-center mt-1">
-                                    <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2 text-purple-600" />
-                                    {user.location}
-                                </p>
+                              
                             </div>
                         </div>
                         <div className="mt-4 md:mt-0">
@@ -100,64 +113,57 @@ export default function UserProfile() {
             </div>
 
             <div className="rounded-lg overflow-hidden my-4 md:my-8 ">
-                <div className="p-4 md:p-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-bold">Projects</h2>
-                        {isOwnProfile && (
-                            <button 
-                                onClick={handleAddProject}
-                                className="bg-purple-800 hover:bg-purple-700 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center"
-                                title="Add Project"
-                            >
-                                <FontAwesomeIcon icon={faPlus} />
-                            </button>
-                        )}
-                    </div>
-                    {user.projects && user.projects.length > 0 ? (
-                        user.projects.map((project, index) => (
-                            <div key={index} className="mb-6 pb-6 border-b last:border-b-0">
-                                 {project.seekingCollaborators && (
-                            <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded mb-5">
-                                Hiring
-                            </span>
-                            )}
-                            {project.collaborationDetails && (
-                                <div className="bg-purple-50 border-l-4 border-purple-500 text-purple-700 p-4 mb-4 rounded-r-md">
-                                    <p className="text-sm">{project.collaborationDetails}</p>
-                                </div>
-                                )}
-                            
-                                <h3 className="text-xl font-semibold">{project.title}</h3>
-                                <p className="text-gray-700 mt-2">{project.description}</p>
-                                {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
-                                {project.images && project.images.length > 0 && (
-                                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                        {project.images.map((image, index) => (
-                                            <div key={index} className="relative">
-                                                <Image 
-                                                    src={image}
-                                                    alt={`Project image ${index + 1}`} 
-                                                    width={200} 
-                                                    height={200} 
-                                                    className="rounded-md object-cover w-full h-auto"
-                                                />
-                                            </div>
-                                            
-                                        ))}
-                                        
-                                    </div>
-                                    
-                                )}
-                            </div>
-                            
-                        ))
-                        
-                    ) : (
-                        <p className="text-gray-600 text-center py-4">No projects posted yet.</p>
+    <div className="p-4 md:p-6">
+        <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">Projects</h2>
+            {isOwnProfile && (
+                <button 
+                    onClick={handleAddProject}
+                    className="bg-purple-800 hover:bg-purple-700 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center"
+                    title="Add Project"
+                >
+                    <FontAwesomeIcon icon={faPlus} />
+                </button>
+            )}
+        </div>
+        {projects && projects.length > 0 ? (
+            projects.map((project, index) => (
+                <div key={index} className="mb-6 pb-6 border-b last:border-b-0">
+                    {project.seekingCollaborators && (
+                        <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded mb-5">
+                            Hiring
+                        </span>
                     )}
-                    
+                    {project.collaborationDetails && (
+                        <div className="bg-purple-50 border-l-4 border-purple-500 text-purple-700 p-4 mb-4 rounded-r-md">
+                            <p className="text-sm">{project.collaborationDetails}</p>
+                        </div>
+                    )}
+                    <h3 className="text-xl font-semibold">{project.title}</h3>
+                    <p className="text-gray-700 mt-2">{project.description}</p>
+                    {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
+                    {project.images && project.images.length > 0 && (
+                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {project.images.map((image, imageIndex) => (
+                                <div key={imageIndex} className="relative">
+                                    <Image 
+                                        src={image}
+                                        alt={`Project image ${imageIndex + 1}`} 
+                                        width={200} 
+                                        height={200} 
+                                        className="rounded-md object-cover w-full h-auto"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
-            </div>
+            ))
+        ) : (
+            <p className="text-gray-600 text-center py-4">No projects posted yet.</p>
+        )}
+    </div>
+</div>
         </main>
     );
 }

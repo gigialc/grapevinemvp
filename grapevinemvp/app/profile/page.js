@@ -23,6 +23,15 @@ export default function Profile() {
     const router = useRouter();
     const [projects, setProjects] = useState([]);
 
+    useEffect(() => {
+        if (session?.user?.email) {
+            fetchUserData(session.user.email);
+            fetchProjects(session.user.id);
+        }
+    }
+    , [session]);
+
+
     const fetchUserData = async (email) => {
         try {
             const response = await fetch(`/api/user?email=${email}`);
@@ -37,16 +46,10 @@ export default function Profile() {
         }
     };
 
-    useEffect(() => {
-        if (session?.user?.email) {
-            fetchUserData(session.user.email);
-            fetchProjects(session.user.email);
-        }
-    }, [session]);
     
-    const fetchProjects = async (email) => {
+    const fetchProjects = async (userId) => {
         try {
-            const response = await fetch(`/api/projects?email=${email}`);
+            const response = await fetch(`/api/projects?userId=${userId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch projects');
             }
@@ -56,6 +59,7 @@ export default function Profile() {
             console.error('Error fetching projects:', error);
         }
     };
+    
 
 
     if (status === 'loading' || !user) {
@@ -87,10 +91,7 @@ export default function Profile() {
                                     <FontAwesomeIcon icon={faGraduationCap} className="mr-2 text-purple-600" />
                                     {user.education}
                                 </p>
-                                <p className="text-gray-600 flex items-center mt-1">
-                                    <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2 text-purple-600" />
-                                    {user.location}
-                                </p>
+                              
                             </div>
                         </div>
                         <div className="mt-4 md:mt-0">

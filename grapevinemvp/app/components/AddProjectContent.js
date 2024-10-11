@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from "next-auth/react";
@@ -9,118 +8,84 @@ import Image from 'next/image';
 export default function AddProjectContent() {
   const searchParams = useSearchParams();
   const projectType = searchParams.get('type');
-  const projectId = searchParams.get('projectID');
   const router = useRouter();
   const { data: session } = useSession();
-  const [images, setImages] = useState(''); // is this needed?
-  const [profileImage, setProfileImage] = useState(null); // is this needed?
   
   const [project, setProject] = useState({
     title: '',
     description: '',
-    link: '',
+    link: [],
     images: [],
     seekingCollaborators: false,
     collaborationDetails: '',
     tags: [],
-    createdBy: '',
-    createdAt: '',
-    updatedAt: '',
-    collaborators: [],
   });
 
-  const fetchProjects = async () => {
-    if (session?.user?.email) {
-      try {
-        const response = await fetch(`/api/user?email=${session.user.email}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch projects');
-        }
-        const data = await response.json();
-        setProjects(data.projects);
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-      }
-    }
-  };
+    const handleRemoveImage = (index) => {
+        setProject(prev => ({
+        ...prev,
+        images: prev.images.filter((_, i) => i !== index)
+        }));
+    };
 
-  useEffect(() => {
-    fetchProjects();
-  }, [session, fetchProjects]);
-
-  const handleRemoveImage = (index) => {
-    setProject(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProject(prev => ({ ...prev, [name]: value }));
-  };
-  
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!session || !session.user) {
-      console.error("User not authenticated");
-      return;
-    }
-  
-    const newProject = {
-      title: project.title,
-      description: project.description,
-      link: project.link,
-      images: project.images,
-      seekingCollaborators: project.seekingCollaborators,
-      collaborationDetails: project.collaborationDetails,
-      tags: project.tags,
-      createdBy: session.user.email,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      collaborators: project.collaborators,
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setProject(prev => ({ ...prev, [name]: value }));
     };
   
-    try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          email: session.user.email,
-          project: newProject 
-        }),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to update user document');
-      }
-  
-    //   const updatedUser = await response.json();
-      console.log('Project added successfully', updatedUser);
-  
-    //   // Update local state if necessary
-    //   setUser(updatedUser);
-  
-      // Clear the form
-      setProject({ title: '', description: '', link: '', images: [], seekingCollaborators: false, collaborationDetails: '', tags: [] , createdBy: '', createdAt: '', updatedAt: '', collaborators: [] });
-  
-    } catch (error) {
-      console.error('Error updating projects:', error);
-    }
-  };
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if (!session || !session.user) {
+          console.error("User not authenticated");
+          return;
+        }
+      
+        const newProject = {
+          ...project,
+          createdBy: session.user.id,
+        };
+      
+        try {
+          const response = await fetch('/api/projects', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newProject),
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to add project');
+          }
+      
+          const createdProject = await response.json();
+          console.log('Project added successfully', createdProject);
+      
+          // Clear the form
+          setProject({
+            title: '',
+            description: '',
+            link: [],
+            images: [],
+            seekingCollaborators: false,
+            collaborationDetails: '',
+            tags: [],
+          });
+      
+        } catch (error) {
+          console.error('Error adding project:', error);
+        }
+      };
 
-  const handleTagToggle = (tag) => {
-    setProject(prev => ({
+    const handleTagToggle = (tag) => {
+        setProject(prev => ({
         ...prev,
         tags: prev.tags.includes(tag)
-
             ? prev.tags.filter(t => t !== tag)
             : [...prev.tags, tag]
-    }));
+        }));
     };
-
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
@@ -153,12 +118,11 @@ export default function AddProjectContent() {
   };
 
 
-
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <Navbar />
-      <div className="max-w-2xl mx-auto mt-8 bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Add {projectType} Project</h1>
+        <div className="bg-gray-100 min-h-screen">
+          <Navbar />
+          <div className="max-w-2xl mx-auto mt-8 bg-white rounded-lg shadow-md p-6">
+            <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Add {projectType} Project</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Project Title</label>
@@ -290,8 +254,8 @@ export default function AddProjectContent() {
               </button>
             ))}
           </div>
-        </div>
-           
+        </div>   
+
           <button
             type="submit"
             className="w-full bg-purple-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"

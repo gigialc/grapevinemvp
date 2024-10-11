@@ -16,46 +16,45 @@ function validateTags(tags) {
   return tags.every(tag => validTags.includes(tag));
 }
 
-// Create a new Project (POST request handler)
 export async function POST(request) {
-  try {
-    await connectDB();
-
-    const { email, project } = await request.json();
-
-    if (!validateTags(project.tags)) {
-      return NextResponse.json({ error: 'Invalid tags provided' }, { status: 400 });
+    try {
+      await connectDB();
+  
+      const project = await request.json();
+  
+      if (!project.tags || !validateTags(project.tags)) {
+        return NextResponse.json({ error: 'Invalid tags provided' }, { status: 400 });
+      }
+  
+      if (!project.createdBy) {
+        return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+      }
+  
+      // Find the user by ID to associate them as the creator of the project
+      const user = await User.findById(project.createdBy);
+      if (!user) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+  
+      // Create a new project document, associating it with the user (creator)
+      const newProject = await Project.create({
+        ...project,
+        createdBy: user._id, // Associate the user by their ObjectId
+      });
+  
+      // Update the user's document to include the new Project
+      await User.findByIdAndUpdate(
+        user._id,
+        { $push: { projects: newProject._id } },
+        { new: true, runValidators: true }
+      );
+  
+      return NextResponse.json(newProject, { status: 201 });
+    } catch (error) {
+      console.error('Error adding project:', error);
+      return NextResponse.json({ error: 'Failed to add project', details: error.message }, { status: 500 });
     }
-
-    // Find the user by email to associate them as the creator of the project
-    const user = await User.findOne({ email });
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    // Create a new project document, associating it with the user (creator)
-    const newProject = await Project.create({
-      ...project,
-      createdBy: user._id, // Associate the user by their ObjectId
-    });
-
-    // Update the user's document to include Project
-    const updatedUser = await User.findOneAndUpdate(
-      { email: email },
-      { $push: { projects: newProject._id } },
-      { new: true, runValidators: true } 
-    );
-
-    if (!updatedUser) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    return NextResponse.json(updatedUser);
-  } catch (error) {
-    console.error('Error adding project:', error);
-    return NextResponse.json({ error: 'Failed to add project' }, { status: 500 });
   }
-}
 
 // Edit an existing Project (PUT request handler)
 export async function PUT(request) {
@@ -119,20 +118,30 @@ export async function DELETE(request) {
 
 export async function GET(request) {
     try {
-      await connectDB();
-  
-      // Fetch all projects and populate the 'createdBy' field with user data
-      const projects = await Project.find().populate('createdBy', 'name email');
-  
-      // Map the projects to include the userName
-      const projectsWithUserName = projects.map(project => ({
-        ...project.toObject(),
-        userName: project.createdBy ? project.createdBy.name : 'Unknown User'
-      }));
-  
-      return NextResponse.json(projectsWithUserName);
+        await connectDB();
+
+        const { searchParams } = new URL(request.url);
+        const userId = searchParams.get('userId');
+
+        let projects;
+
+        if (userId) {
+            // Fetch projects for the specific user
+            projects = await Project.find({ createdBy: userId }).populate('createdBy', 'name email');
+        } else {
+            // Fetch all projects if no userId is provided
+            projects = await Project.find().populate('createdBy', 'name email');
+        }
+
+        // Map the projects to include the userName
+        const projectsWithUserName = projects.map(project => ({
+            ...project.toObject(),
+            userName: project.createdBy ? project.createdBy.name : 'Unknown User'
+        }));
+
+        return NextResponse.json(projectsWithUserName);
     } catch (error) {
-      console.error('Error fetching projects:', error);
-      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        console.error('Error fetching projects:', error);
+        return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
     }
 }
