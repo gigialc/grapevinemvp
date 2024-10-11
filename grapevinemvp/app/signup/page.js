@@ -77,13 +77,10 @@ export default function SignUp() {
         password,
         profileImage,
         bio,
-        location,
         website,
         skills: skills.filter((skill) => skill.trim() !== ""),
         education,
         socialLinks,
-        projects,
-        projectInterest,
         interests: interests.filter((interest) => interest.trim() !== ""),
         // events: tags, // Use the selected tags as events
       };

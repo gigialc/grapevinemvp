@@ -82,3 +82,50 @@ export async function PUT(request) {
     return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
   }
 }
+
+export async function POST(request) {
+  try {
+    await connectDB();
+    const data = await request.json();
+    const { email, password, name } = data;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return NextResponse.json({ error: 'User already exists' }, { status: 400 });
+    }
+
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+      name,
+      profileImage: '',
+      bio: '',
+      website: '',
+      skills: [],
+      education: [],
+      socialLinks: {
+        linkedin: '',
+        github: '',
+      },
+      interests: [],
+    });
+
+    // Remove password from the response
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    return NextResponse.json(userResponse, { status: 201 });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    if (error.code === 11000) {
+      return NextResponse.json({ error: 'Email already in use' }, { status: 400 });
+    }
+    return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
+  }
+}
