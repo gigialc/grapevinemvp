@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/mongodb';
 import User from '@/models/User';
 
-// GET request handler to fetch user by ID
 export async function GET(request, { params }) {
   const { id } = params;
 

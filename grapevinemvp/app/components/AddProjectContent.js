@@ -40,6 +40,13 @@ export default function AddProjectContent() {
           return;
         }
       
+        // Validate tags
+        if (!Array.isArray(project.tags) || project.tags.length === 0 || project.tags.length > 5) {
+            console.error("Invalid tags provided");
+            // You might want to set an error state here to display to the user
+            return;
+        }
+      
         const newProject = {
           ...project,
           createdBy: session.user.id,
@@ -61,6 +68,8 @@ export default function AddProjectContent() {
       
           const createdProject = await response.json();
           console.log('Project added successfully', createdProject);
+            // Redirect to the project page
+            router.push(`/projects/${createdProject._id}`);
       
           // Clear the form
           setProject({
@@ -78,14 +87,25 @@ export default function AddProjectContent() {
         }
       };
 
-    const handleTagToggle = (tag) => {
-        setProject(prev => ({
-        ...prev,
-        tags: prev.tags.includes(tag)
+
+      const handleTagToggle = (tag) => {
+        setProject(prev => {
+          const updatedTags = prev.tags.includes(tag)
             ? prev.tags.filter(t => t !== tag)
-            : [...prev.tags, tag]
-        }));
+            : [...prev.tags, tag];
+          
+          // Limit to 5 tags
+          if (updatedTags.length > 5) {
+            return prev; // Don't update if we're exceeding 5 tags
+          }
+      
+          return {
+            ...prev,
+            tags: updatedTags
+          };
+        });
     };
+    
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
@@ -119,13 +139,17 @@ export default function AddProjectContent() {
 
 
   return (
-        <div className="bg-gray-100 min-h-screen">
-          <Navbar />
-          <div className="max-w-2xl mx-auto mt-8 bg-white rounded-lg shadow-md p-6">
-            <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Add {projectType} Project</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Project Title</label>
+    <div className=" min-h-screen">
+      <Navbar />
+      <div className="max-w-3xl mx-auto mt-8 bg-white rounded-lg shadow-xl p-8 mb-20">
+        <h1 className="text-3xl font-bold mb-8 text-left text-purple-800">
+         What are you working on?
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="group">
+            <label htmlFor="title" className="block text-lg font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors">
+              Project Title
+            </label>
             <input
               type="text"
               id="title"
@@ -133,12 +157,15 @@ export default function AddProjectContent() {
               value={project.title}
               onChange={handleChange}
               required
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter project title"
+              className="w-full p-3 border-2 border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 ease-in-out hover:border-purple-300"
+              placeholder="Enter your awesome project title"
             />
           </div>
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+  
+          <div className="group">
+            <label htmlFor="description" className="block text-lg font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors">
+              Description
+            </label>
             <textarea
               id="description"
               name="description"
@@ -146,121 +173,136 @@ export default function AddProjectContent() {
               onChange={handleChange}
               required
               rows={4}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Describe your project"
+              className="w-full p-3 border-2 border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 ease-in-out hover:border-purple-300"
+              placeholder="Describe"
             />
           </div>
-          <div>
-            <label htmlFor="link" className="block text-sm font-medium text-gray-700 mb-1">Project Links</label>
+  
+          <div className="group">
+            <label htmlFor="link" className="block text-lg font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors">
+              Project Link (optional)
+            </label>
             <input
               type="url"
               id="link"
               name="link"
               value={project.link}
               onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="https://your-project-link.com"
+              className="w-full p-3 border-2 border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 ease-in-out hover:border-purple-300"
+              placeholder="https://your-awesome-project.com"
             />
           </div>
+  
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Project Images</label>
-            <div className="flex items-center justify-center w-full">
-              <label htmlFor="images" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <svg className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                  <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                </div>
-                <input
-                  id="images"
-                  type="file"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  accept="image/*"
-                  multiple
+        <label className="block text-lg font-medium text-gray-700 mb-4">Project Images</label>
+        <div className="flex items-center justify-center w-full">
+            <label htmlFor="images" className="flex flex-col items-center justify-center w-full h-32 border-2 border-purple-300 border-dashed rounded-lg cursor-pointer bg-purple-50 hover:bg-purple-100 transition duration-300 ease-in-out">  
+            <div className="flex flex-col items-center justify-center pt-3 pb-4">
+                <svg className="w-8 h-8 mb-3 text-purple-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <p className="mb-2 text-sm text-purple-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                <p className="text-xs text-purple-500">PNG, JPG, GIF up to 10MB</p>
+            </div>
+            <input
+                id="images"
+                type="file"
+                onChange={handleImageUpload}
+                className="hidden"
+                accept="image/*"
+                multiple
+            />
+            </label>
+        </div>
+        </div>
+
+        {project.images && project.images.length > 0 && (
+        <div className="mt-4 grid grid-cols-2 gap-4">
+            {project.images.map((image, index) => (
+            <div key={index} className="relative group">
+                <Image 
+                src={image}
+                alt={`Project image ${index + 1}`} 
+                width={100}
+                height={100}
+                className="rounded-md object-cover w-full h-full transition duration-300 ease-in-out group-hover:opacity-75"
                 />
-              </label>
+                <button
+                type="button"
+                onClick={() => handleRemoveImage(index)}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 text-xs opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out"
+                >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                </button>
             </div>
-          </div>
+            ))}
+        </div>
+        )}
   
-          {project.images && project.images.length > 0 && (
-            <div className="mt-4 grid grid-cols-3 gap-4">
-              {project.images.map((image, index) => (
-                <div key={index} className="relative">
-                  <Image 
-                    src={image}
-                    alt={`Project image ${index + 1}`} 
-                    width={100}
-                    height={100}
-                    className="rounded-md object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(index)}
-                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs"
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-  
-          <div className="mb-4 mt-10">
-            <label className="flex items-center">
+          <div className="mb-6 bg-purple-50 p-4 rounded-lg shadow-inner">
+            <label className="flex items-center space-x-3 text-lg font-medium text-purple-700 cursor-pointer">
               <input
                 type="checkbox"
                 checked={project.seekingCollaborators}
                 onChange={(e) => setProject({...project, seekingCollaborators: e.target.checked})}
-                className="mr-2"
+                className="form-checkbox h-5 w-5 text-purple-600 transition duration-150 ease-in-out"
               />
-              Looking for team members?
+              <span>👥 Looking for collaborators?</span>
             </label>
           </div>
+  
           {project.seekingCollaborators && (
-            <div className="mb-4">
-              <label htmlFor="collaborationDetails" className="block text-sm font-medium text-gray-700 mb-1">
-                What are you looking for in a team member?
+            <div className="mb-6  p-4 rounded-lg">
+              <label htmlFor="collaborationDetails" className="block text-lg font-medium text-purple-700 mb-2">
+                What are you looking for in a collaborator?
               </label>
               <textarea
                 id="collaborationDetails"
                 name="collaborationDetails"
                 value={project.collaborationDetails}
                 onChange={(e) => setProject({...project, collaborationDetails: e.target.value})}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-3 border-2 rounded-md transition-all duration-300 ease-in-out"
                 placeholder="Describe the skills or roles you're looking for in a team member"
+                rows={3}
               />
             </div>
           )}
   
-         {/* tags that you can select in bubbles */}
-         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Tag your project for people to find you!</label>
-          <div className="flex flex-wrap gap-2">
-            {['Tech', 'Finance', 'Art', 'Music', 'Health & Wellness', 'Education', 'Environmental', 'Nonprofit', 'Entrepreneurship', 'Writing & Literature', 'Entertainment', 'Social Impact', 'Science', 'Fashion', 'Social Media'].map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => handleTagToggle(tag)}
-                className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                  project.tags.includes(tag)
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        </div>   
-
+                <div className="mb-8">
+                <label className="block text-lg font-medium text-gray-700 mb-3">
+                    Tag your project for people to find you! (Max 5 tags)
+                </label>
+                <div className="flex flex-wrap gap-2">
+                    {['Tech', 'Finance', 'Art', 'Music', 'Health & Wellness', 'Education', 'Environmental', 'Nonprofit', 'Entrepreneurship', 'Writing & Literature', 'Entertainment', 'Social Impact', 'Science', 'Fashion', 'Social Media'].map((tag) => (
+                    <button
+                        key={tag}
+                        type="button"
+                        onClick={() => project.tags.length < 5 || project.tags.includes(tag) ? handleTagToggle(tag) : null}
+                        className={`px-4 py-2 rounded-full text-sm font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 ${
+                        project.tags.includes(tag)
+                            ? 'bg-purple-600 text-white shadow-lg'
+                            : project.tags.length >= 5
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                        disabled={project.tags.length >= 5 && !project.tags.includes(tag)}
+                    >
+                        {tag}
+                    </button>
+                    ))}
+                </div>
+                {project.tags.length >= 5 && (
+                    <p className="text-sm text-red-500 mt-2">Maximum number of tags reached (5)</p>
+                )}
+                </div>
+  
           <button
             type="submit"
-            className="w-full bg-purple-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full bg-purple-800 text-white text-lg font-bold py-4 rounded-md hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 ease-in-out transform hover:-translate-y-1"
           >
-            Add Project
+             Submit
           </button>
         </form>
       </div>

@@ -121,7 +121,7 @@ export default ExploreProjects;
 const ProjectCard = ({ project }) => {
   return (
     <div className="bg-white rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-300 break-inside-avoid mb-4">
-       <Link href={`/profile/${project.createdBy._id}`}>
+         <Link href={`/project/${project._id}`} passHref>
         <div className="p-4">
           {project.images && project.images.length > 0 && (
             <div className="mb-4">
