@@ -15,11 +15,6 @@ export default function ProjectPage() {
     const [users, setUsers] = useState([])
     const [creatorId, setCreatorId] = useState(null)
 
-    useEffect(() => {
-        fetchUsers()
-    }, [session])
-
-
   useEffect(() => {
     const fetchProject = async () => {
       if (!params.id) return;
@@ -40,26 +35,30 @@ export default function ProjectPage() {
         setIsLoading(false);
       }
     };
-
     fetchProject();
   }, [params.id]);
 
-   // fetch user data from the creatorId from the project data 
-    const fetchUsers = async () => {
-     if (session?.user?.email) {
-        try {
-          const response = await fetch(`/api/user?userId=${creatorId}`)
-          if (!response.ok) {
-             throw new Error('Failed to fetch users')
-          }
-          const data = await response.json()
-          setUsers(data)
-        } catch (error) {
-          console.error('Error fetching users:', error)
-        }
-     }
+    useEffect(() => {
+        fetchUsers()
     }
-   
+    , [creatorId])
+
+    const fetchUsers = async () => {
+        console.log(creatorId)
+        if (creatorId) {
+            try {
+                const response = await fetch(`/api/user?id=${creatorId}`)
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users')
+                }
+                const data = await response.json()
+                setUsers(data)
+            } catch (error) {
+                console.error('Error fetching users:', error)
+            }
+        }
+    }
+
 
 
   if (isLoading) {
@@ -80,7 +79,7 @@ export default function ProjectPage() {
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-4">{project.title}</h1>
-        <p className="text-lg text-gray-600 mb-4">by {users.name}</p>
+        <p className="text-lg text-gray-600 mb-4">by {creatorId.name}</p>
         {project.images && project.images.length > 0 && (
           <div className="mb-6">
             <Image

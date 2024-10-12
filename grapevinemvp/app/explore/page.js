@@ -53,14 +53,18 @@ const ExplorePage = () => {
       )
     }
 
-    // Filter by search query
+    // Filter by search query (name similarity)
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(user =>
-        user.name.toLowerCase().includes(query) ||
-        user.bio.toLowerCase().includes(query) ||
-        user.skills.some(skill => skill.toLowerCase().includes(query))
-      )
+        user.name.toLowerCase().includes(query)
+      ).sort((a, b) => {
+        const aStartsWith = a.name.toLowerCase().startsWith(query)
+        const bStartsWith = b.name.toLowerCase().startsWith(query)
+        if (aStartsWith && !bStartsWith) return -1
+        if (!aStartsWith && bStartsWith) return 1
+        return a.name.localeCompare(b.name)
+      })
     }
 
     setFilteredUsers(filtered)
@@ -74,8 +78,8 @@ const ExplorePage = () => {
     )
   }
 
-  const handleSearch = (query) => {
-    setSearchQuery(query)
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value)
   }
 
   return (
@@ -84,6 +88,15 @@ const ExplorePage = () => {
       <div className="explore-page mx-4">
         <div className="my-3">
           <h1 className="text-2xl font-bold mb-4">Explore People</h1>
+          <div className="mb-4">
+            <input
+                type="text"
+                placeholder="Search users by name..."
+                value={searchQuery}
+                onChange={handleSearch}
+                className="w-full px-6 py-1.5 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 shadow-sm text-lg"
+            />
+            </div>
           <BubbleFilter
             skills={allSkills.slice(0, MAX_SKILLS_DISPLAYED)}
             selectedSkills={selectedSkills}

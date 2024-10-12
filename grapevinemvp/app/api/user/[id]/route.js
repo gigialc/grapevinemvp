@@ -7,7 +7,7 @@ export async function GET(request, { params }) {
 
   try {
     await connectDB();
-    const user = await User.findById(id).select('-password');
+    const user = await User.findById(id).select('-password' );
     
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
