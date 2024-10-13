@@ -105,7 +105,7 @@ export default function AddProjectContent() {
           };
         });
     };
-    
+
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
@@ -272,7 +272,7 @@ export default function AddProjectContent() {
   
                 <div className="mb-8">
                 <label className="block text-lg font-medium text-gray-700 mb-3">
-                    Tag your project for people to find you! (Max 5 tags)
+                    Tag your project for people to find you! (Max 4 tags)
                 </label>
                 <div className="flex flex-wrap gap-2">
                     {['Tech', 'Finance', 'Art', 'Music', 'Health & Wellness', 'Education', 'Environmental', 'Nonprofit', 'Entrepreneurship', 'Writing & Literature', 'Entertainment', 'Social Impact', 'Science', 'Fashion', 'Social Media'].map((tag) => (
