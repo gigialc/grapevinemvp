@@ -143,7 +143,7 @@ const ProjectCard = ({ project }) => {
           )}
           {project.seekingCollaborators && (
             <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full mb-2">
-              Hiring
+              Looking for Collaborators
             </span>
           )}
         </div>

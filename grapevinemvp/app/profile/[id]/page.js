@@ -131,7 +131,7 @@ export default function UserProfile() {
                 <div key={index} className="mb-6 pb-6 border-b last:border-b-0">
                     {project.seekingCollaborators && (
                         <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded mb-5">
-                            Hiring
+                            Looking for Collaborators
                         </span>
                     )}
                     {project.collaborationDetails && (
