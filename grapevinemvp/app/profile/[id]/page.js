@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
@@ -14,29 +14,30 @@ export default function UserProfile() {
     const router = useRouter();
     const { id } = useParams();
     const [projects, setProjects] = useState([]);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    useEffect(() => {
-        if (id) {
-            fetchUserData(id);
-            fetchProjects(id);
-        }
-    }, [id]);
-
-    const fetchUserData = async (userId) => {
+    const fetchUserData = useCallback(async (userId) => {
+        setIsLoading(true);
+        setError(null);
         try {
             const response = await fetch(`/api/user/${userId}`);
             if (response.ok) {
                 const userData = await response.json();
                 setUser(userData);
             } else {
-                console.error('Failed to fetch user data');
+                throw new Error('Failed to fetch user data');
             }
         } catch (error) {
             console.error('Error fetching user data:', error);
+            setError('Failed to load user data');
+        } finally {
+            setIsLoading(false);
         }
-    };
+    }, []);
 
-    const fetchProjects = async (userId) => {
+    const fetchProjects = useCallback(async (userId) => {
         try {
             const response = await fetch(`/api/projects?userId=${userId}`);
             if (!response.ok) {
@@ -46,17 +47,81 @@ export default function UserProfile() {
             setProjects(data);
         } catch (error) {
             console.error('Error fetching projects:', error);
+            setError('Failed to load projects');
         }
-    };
-    
+    }, []);
 
-    if (status === 'loading' || !user) {
+    const fetchFollowStatus = useCallback(async (userId) => {
+        if (!session || !session.user) {
+            return;
+        }
+    
+        try {
+            const response = await fetch(`/api/user/${userId}/follow-status?currentUserId=${session.user.id}`);
+            if (response.ok) {
+                const data = await response.json();
+                setIsFollowing(data.isFollowing);
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to fetch follow status:', errorData);
+            }
+        } catch (error) {
+            console.error('Error fetching follow status:', error);
+        }
+    }, [session]);
+
+
+    useEffect(() => {
+        if (id && session) {
+            fetchUserData(id);
+            fetchProjects(id);
+            fetchFollowStatus(id);
+        }
+    }, [id, session, fetchUserData, fetchProjects, fetchFollowStatus]);
+
+
+    const handleAddProject = useCallback(() => {
+        router.push('/add-project');
+    }, [router]);
+
+
+    const handleFollowToggle = async () => {
+        if (!session || !session.user) {
+            console.error('No session or user found');
+            return;
+        }
+    
+        try {
+            const response = await fetch(`/api/user/${user._id}/follow`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ currentUserId: session.user.id })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setIsFollowing(data.isFollowing);
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to toggle follow status:', errorData);
+            }
+        } catch (error) {
+            console.error('Error toggling follow status:', error);
+        }
+    }
+
+    if (isLoading) {
         return <div>Loading...</div>;
     }
 
-    const handleAddProject = () => {
-        router.push('/add-project');
-    };
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
+    if (!user) {
+        return <div>User not found</div>;
+    }
 
     const isOwnProfile = session?.user?.email === user.email;
 
@@ -67,10 +132,12 @@ export default function UserProfile() {
                 <div className="p-4 md:p-6">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                         <div className="flex flex-col md:flex-row md:items-center">
-                            <img 
+                            <Image 
                                 src={user.profileImage || '/images/default-avatar.png'}
                                 alt={user.name} 
-                                className="w-24 h-24 rounded-full border-4 border-white mb-4 md:mb-0 md:mr-4"
+                                width={96}
+                                height={96}
+                                className="rounded-full border-4 border-white mb-4 md:mb-0 md:mr-4"
                             />
                             <div>
                                 <h1 className="text-2xl font-bold text-black">{user.name}</h1>
@@ -79,7 +146,6 @@ export default function UserProfile() {
                                     <FontAwesomeIcon icon={faGraduationCap} className="mr-2 text-purple-600" />
                                     {user.education}
                                 </p>
-                              
                             </div>
                         </div>
                         <div className="mt-4 md:mt-0">
@@ -88,12 +154,24 @@ export default function UserProfile() {
                                     Edit Profile
                                 </Link>
                             ) : (
-                                <button 
-                                    onClick={() => window.location.href = `mailto:${user.email}?subject=Collaboration Request&body=Hello ${user.name},%0D%0A%0D%0AI'd like to request a collaboration with you.`}
-                                    className="bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition duration-300"
-                                >
-                                    Request Collaboration
-                                </button>
+                                <div className="flex space-x-2">
+                                    <button 
+                                        onClick={() => window.location.href = `mailto:${user.email}?subject=Collaboration Request&body=Hello ${user.name},%0D%0A%0D%0AI'd like to request a collaboration with you.`}
+                                        className="bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition duration-300"
+                                    >
+                                        Request Collaboration
+                                    </button>
+                                    <button 
+                                        onClick={handleFollowToggle}
+                                        className={`px-4 py-2 rounded-full transition duration-300 ${
+                                            isFollowing 
+                                                ? 'bg-gray-200 text-gray-800 hover:bg-gray-300' 
+                                                : 'bg-blue-500 text-white hover:bg-blue-600'
+                                        }`}
+                                    >
+                                        {isFollowing ? 'Unfollow' : 'Follow'}
+                                    </button>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -113,57 +191,57 @@ export default function UserProfile() {
             </div>
 
             <div className="rounded-lg overflow-hidden my-4 md:my-8 ">
-    <div className="p-4 md:p-6">
-        <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Projects</h2>
-            {isOwnProfile && (
-                <button 
-                    onClick={handleAddProject}
-                    className="bg-purple-800 hover:bg-purple-700 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center"
-                    title="Add Project"
-                >
-                    <FontAwesomeIcon icon={faPlus} />
-                </button>
-            )}
-        </div>
-        {projects && projects.length > 0 ? (
-            projects.map((project, index) => (
-                <div key={index} className="mb-6 pb-6 border-b last:border-b-0">
-                    {project.seekingCollaborators && (
-                        <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded mb-5">
-                            Looking for Collaborators
-                        </span>
-                    )}
-                    {project.collaborationDetails && (
-                        <div className="bg-purple-50 border-l-4 border-purple-500 text-purple-700 p-4 mb-4 rounded-r-md">
-                            <p className="text-sm">{project.collaborationDetails}</p>
-                        </div>
-                    )}
-                    <h3 className="text-xl font-semibold">{project.title}</h3>
-                    <p className="text-gray-700 mt-2">{project.description}</p>
-                    {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
-                    {project.images && project.images.length > 0 && (
-                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {project.images.map((image, imageIndex) => (
-                                <div key={imageIndex} className="relative">
-                                    <Image 
-                                        src={image}
-                                        alt={`Project image ${imageIndex + 1}`} 
-                                        width={200} 
-                                        height={200} 
-                                        className="rounded-md object-cover w-full h-auto"
-                                    />
-                                </div>
-                            ))}
-                        </div>
+                <div className="p-4 md:p-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold">Projects</h2>
+                        {isOwnProfile && (
+                            <button 
+                                onClick={handleAddProject}
+                                className="bg-purple-800 hover:bg-purple-700 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center"
+                                title="Add Project"
+                            >
+                                <FontAwesomeIcon icon={faPlus} />
+                            </button>
+                        )}
+                    </div>
+                    {projects && projects.length > 0 ? (
+                        projects.map((project, index) => (
+                            <div key={index} className="mb-6 pb-6 border-b last:border-b-0">
+                                {project.seekingCollaborators && (
+                                    <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded mb-5">
+                                        Looking for Collaborators
+                                    </span>
+                                )}
+                                {project.collaborationDetails && (
+                                    <div className="bg-purple-50 border-l-4 border-purple-500 text-purple-700 p-4 mb-4 rounded-r-md">
+                                        <p className="text-sm">{project.collaborationDetails}</p>
+                                    </div>
+                                )}
+                                <h3 className="text-xl font-semibold">{project.title}</h3>
+                                <p className="text-gray-700 mt-2">{project.description}</p>
+                                {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
+                                {project.images && project.images.length > 0 && (
+                                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                        {project.images.map((image, imageIndex) => (
+                                            <div key={imageIndex} className="relative">
+                                                <Image 
+                                                    src={image}
+                                                    alt={`Project image ${imageIndex + 1}`} 
+                                                    width={200} 
+                                                    height={200} 
+                                                    className="rounded-md object-cover w-full h-auto"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-600 text-center py-4">No projects posted yet.</p>
                     )}
                 </div>
-            ))
-        ) : (
-            <p className="text-gray-600 text-center py-4">No projects posted yet.</p>
-        )}
-    </div>
-</div>
+            </div>
         </main>
     );
 }

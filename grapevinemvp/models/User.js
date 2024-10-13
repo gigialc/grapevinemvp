@@ -18,7 +18,9 @@ const UserSchema = new mongoose.Schema({
   projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
   interests: [{ type: String }],
   // events: [{ type: String }],
-  matches: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }]
+  matches: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }],
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

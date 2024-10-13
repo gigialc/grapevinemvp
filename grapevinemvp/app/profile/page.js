@@ -139,7 +139,7 @@ export default function Profile() {
                         <div key={index} className="mb-6 pb-6 border-b border-gray-200 last:border-b-0">
                             {project.seekingCollaborators && (
                                 <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 mb-5 rounded">
-                                    Hiring
+                                    Looking for Collaborators
                                 </span>
                             )}
                             
