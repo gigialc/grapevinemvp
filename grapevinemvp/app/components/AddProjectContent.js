@@ -81,6 +81,8 @@ export default function AddProjectContent() {
             collaborationDetails: '',
             tags: [],
           });
+
+            router.push('/exploreProjects');
       
         } catch (error) {
           console.error('Error adding project:', error);
