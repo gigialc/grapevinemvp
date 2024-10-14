@@ -79,6 +79,7 @@ export default function ProjectPage() {
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-4">{project.title}</h1>
+        <a href={`/live`} className="ml-2 bg-red-500 rounded-full w-6 h-6 flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-red-600 transition duration-300 ring-2 ring-black"></a>
         <p className="text-lg text-gray-600 mb-4">by {creatorId.name}</p>
         {project.seekingCollaborators && (
           <div className="mt-6 bg-green-100 p-4 rounded-lg">
