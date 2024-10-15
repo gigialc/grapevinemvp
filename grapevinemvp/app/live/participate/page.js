@@ -7,7 +7,7 @@ import MonacoEditor from '@/app/components/MonacoEditor';
 const Participate = () => {
     return (
         <div>
-            <h1>You're a participant</h1>
+            <h1>You are a participant</h1>
             <MonacoEditor />
         </div>
     );
