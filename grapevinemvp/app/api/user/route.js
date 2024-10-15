@@ -15,9 +15,11 @@ export async function GET(request) {
     const email = searchParams.get('email');
     const currentUserEmail = searchParams.get('currentUserEmail');
 
-    // Fetch user by email if 'email' query param is provided
+    // Fetch the whole user information if 'email' param is provided
     if (email) {
-      const user = await User.findOne({ email }).select('-password').populate('projects');
+      const user = await User.findOne({
+        email
+      }).select('-password').populate('projects');
       if (!user) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }

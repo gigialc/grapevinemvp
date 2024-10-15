@@ -5,6 +5,8 @@ import { useParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
 
 export default function ProjectPage() {
     const params = useParams();
@@ -14,6 +16,7 @@ export default function ProjectPage() {
     const { data: session } = useSession()
     const [users, setUsers] = useState([])
     const [creatorId, setCreatorId] = useState(null)
+    const router = useRouter();
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -27,7 +30,7 @@ export default function ProjectPage() {
         }
         const data = await response.json();
         setProject(data);
-        setCreatorId(data.createdBy)
+        setCreatorId(data.createdBy); // Ensure this is set correctly
       } catch (error) {
         console.error('Error fetching project:', error);
         setError(error.message);
@@ -37,28 +40,6 @@ export default function ProjectPage() {
     };
     fetchProject();
   }, [params.id]);
-
-    useEffect(() => {
-        fetchUsers()
-    }
-    , [creatorId])
-
-    const fetchUsers = async () => {
-        console.log(creatorId)
-        if (creatorId) {
-            try {
-                const response = await fetch(`/api/user?id=${creatorId}`)
-                if (!response.ok) {
-                    throw new Error('Failed to fetch users')
-                }
-                const data = await response.json()
-                setUsers(data)
-            } catch (error) {
-                console.error('Error fetching users:', error)
-            }
-        }
-    }
-
 
 
   if (isLoading) {
@@ -76,17 +57,26 @@ export default function ProjectPage() {
   
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-4">{project.title}</h1>
-        <a href={`/live`} className="ml-2 bg-red-500 rounded-full w-6 h-6 flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-red-600 transition duration-300 ring-2 ring-black"></a>
-        <p className="text-lg text-gray-600 mb-4">by {creatorId.name}</p>
-        {project.seekingCollaborators && (
-          <div className="mt-6 bg-green-100 p-4 rounded-lg">
-            <h2 className="text-xl font-semibold mb-2">Looking for Collaborators</h2>
-            <p>{project.collaborationDetails}</p>
-          </div>
-        )}
+        <Navbar />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold mb-4">{project.title}</h1>
+            <a href={`/live`} className="ml-2 bg-red-500 rounded-full w-6 h-6 flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-red-600 transition duration-300 ring-2 ring-black"></a>
+            <p className="text-lg text-gray-600 mb-4 mt-4">by {creatorId.name}</p>
+
+            {project.seekingCollaborators && (
+                <div className="mt-6 bg-purple-100 p-4 rounded-lg">
+                    <h2 className="text-xl font-semibold mb-2">Looking for Collaborators</h2>
+                    <p>{project.collaborationDetails}</p>
+                    {/* <button 
+                        className="mt-4 bg-purple-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
+                        onClick={handleContactClick}
+                    >
+
+                        Contact
+                    </button> */}
+                </div>
+            )}
+
         {project.images && project.images.length > 0 && (
                         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {project.images.map((image, imageIndex) => (
@@ -102,7 +92,7 @@ export default function ProjectPage() {
                             ))}
                         </div>
                     )}
-        <p className="text-lg mb-6">{project.description}</p>
+        <p className="text-lg mb-6 mt-10">{project.description}</p>
         {project.link && (
           <a
             href={project.link}
