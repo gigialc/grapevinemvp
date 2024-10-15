@@ -91,30 +91,16 @@ export default function SignUp() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
+        
       });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error("Signup failed:", response.status, errorData);
-        return;
-      }
+      
 
       const data = await response.json();
       console.log("Signup successful", data);
-
-      const signInResult = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (signInResult?.ok) {
-        router.push("/profile");
-      } else {
-        console.error("Sign in failed after registration", signInResult);
-      }
+      router.push("/exploreProjects");
+        
     } catch (error) {
-      console.error("Error during signup:", error);
+      console.error("Error signing up:", error);
     }
   };
 
