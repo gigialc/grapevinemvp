@@ -310,7 +310,7 @@ export default function SignUp() {
                   type="url"
                   placeholder="LinkedIn"
                   value={socialLinks.linkedin}
-                  required
+           
                   onChange={(e) =>
                     setSocialLinks({ ...socialLinks, linkedin: e.target.value })
                   }
