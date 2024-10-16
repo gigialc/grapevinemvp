@@ -68,7 +68,7 @@ const Participate = () => {
                     </button>
                 </div>
                 <div className="w-1/3 p-4 bg-gray-100">
-                    <Leaderboard />
+                    {/* <Leaderboard /> */}
                     <LiveChat />
                 </div>
             </main>
