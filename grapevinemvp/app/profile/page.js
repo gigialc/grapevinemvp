@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -8,13 +8,7 @@ import Navbar from "../components/Navbar";
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faUserCircle, 
-  faTools, 
-  faBriefcase, 
   faGraduationCap, 
-  faProjectDiagram, 
-  faPlus,
-  faMapMarkerAlt,
   faUserFriends,
   faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
@@ -26,21 +20,19 @@ export default function Profile() {
     const [projects, setProjects] = useState([]);
     const [showFollowers, setShowFollowers] = useState(false);
     const [showFollowing, setShowFollowing] = useState(false);
-    const [followersNames , setFollowersNames] = useState([]);
-    const [followingNames , setFollowingNames] = useState([]);
+    const [followersNames, setFollowersNames] = useState([]);
+    const [followingNames, setFollowingNames] = useState([]);
 
     useEffect(() => {
-        if (session?.user?.email) {
-            fetchUserData(session.user.email);
+        if (session?.user?.id) {
+            fetchUserData(session.user.id);
             fetchProjects(session.user.id);
         }
-    }
-    , [session]);
+    }, [session]);
 
-
-    const fetchUserData = async (email) => {
+    const fetchUserData = async (userId) => {
         try {
-            const response = await fetch(`/api/user?email=${email}`);
+            const response = await fetch(`/api/user/${userId}?action=profile`);
             if (response.ok) {
                 const userData = await response.json();
                 setUser(userData);
@@ -52,7 +44,6 @@ export default function Profile() {
         }
     };
 
-    
     const fetchProjects = async (userId) => {
         try {
             const response = await fetch(`/api/projects?userId=${userId}`);
@@ -66,43 +57,38 @@ export default function Profile() {
         }
     };
 
+    const fetchFollowers = async (userId) => {
+        try {
+            const response = await fetch(`/api/user/${userId}?action=followers`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch followers');
+            }
+            const data = await response.json();
+            setFollowersNames(data);
+        } catch (error) {
+            console.error('Error fetching followers:', error);
+        }
+    };
 
+    const fetchFollowing = async (userId) => {
+        try {
+            const response = await fetch(`/api/user/${userId}?action=following`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch following');
+            }
+            const data = await response.json();
+            setFollowingNames(data);
+        } catch (error) {
+            console.error('Error fetching following:', error);
+        }
+    };
 
-//    const fetchFollowersNames = async () => {
-//         try {
-//             const response = await fetch(`/api/user/${user.followers}/followersNames`,) 
-//             if (response.ok) {
-//                 const followersData = await response.json();
-//                 setFollowersNames(followersData);
-//             } else {
-//                 console.error('Failed to fetch followers data');
-//             }
-//         } catch (error) {
-//             console.error('Error fetching followers data:', error);
-//         }
-//     };
-
-//     const fetchFollowingNames = async () => {
-//         try {
-//             const response = await fetch(`/api/user/${user.following}/followingNames`,) 
-//             if (response.ok) {
-//                 const followingData = await response.json();
-//                 setFollowingNames(followingData);
-//             } else {
-//                 console.error('Failed to fetch following data');
-//             }
-//         } catch (error) {
-//             console.error('Error fetching following data:', error);
-//         }
-//     };
-    
-//     useEffect(() => {
-//         if (user) {
-//             fetchFollowersNames();
-//             fetchFollowingNames();
-//         }
-//     }, [user]);
-
+    useEffect(() => {
+        if (user) {
+            fetchFollowers(user._id);
+            fetchFollowing(user._id);
+        }
+    }, [user]);
     
 
     if (status === 'loading' || !user) {
@@ -153,47 +139,46 @@ export default function Profile() {
                             </div>
 
                             {showFollowers && (
-                                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                    <div className="bg-white p-6 rounded-lg max-w-md w-full">
-                                        <h2 className="text-xl font-bold mb-4">Followers</h2>
-                                        <ul className="max-h-60 overflow-y-auto">
-                                        {user.followers.map((follower) => (
-                                            <li key={follower._id} className="py-2 border-b last:border-b-0">
-                                                {follower.name}
-                                            </li>
-                                        ))}
-                                        </ul>
-                                        <button 
-                                            onClick={() => setShowFollowers(false)}
-                                            className="mt-4 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
-                                        >
-                                            Close
-                                        </button>
-                                    </div>
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                <div className="bg-white p-6 rounded-lg max-w-md w-full">
+                                    <h2 className="text-xl font-bold mb-4">Followers</h2>
+                                    <ul className="max-h-60 overflow-y-auto">
+                                    {followersNames.map((follower) => (
+                                        <li key={follower._id} className="py-2 border-b last:border-b-0">
+                                            {follower.name}
+                                        </li>
+                                    ))}
+                                    </ul>
+                                    <button 
+                                        onClick={() => setShowFollowers(false)}
+                                        className="mt-4 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
+                                    >
+                                        Close
+                                    </button>
                                 </div>
-                            )}
+                            </div>
+                        )}
 
-                            {showFollowing && (
-                                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                    <div className="bg-white p-6 rounded-lg max-w-md w-full">
-                                        <h2 className="text-xl font-bold mb-4">Following</h2>
-                                        <ul className="max-h-60 overflow-y-auto">
-                                        {user.following.map((followedUser) => (
-                                            <li key={followedUser._id} className="py-2 border-b last:border-b-0">
-                                                {followedUser.name}
-                                            </li>
-                                        ))}
-                                        </ul>
-                                        <button 
-                                            onClick={() => setShowFollowing(false)}
-                                            className="mt-4 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
-                                        >
-                                            Close
-                                        </button>
-                                    </div>
+                        {showFollowing && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                <div className="bg-white p-6 rounded-lg max-w-md w-full">
+                                    <h2 className="text-xl font-bold mb-4">Following</h2>
+                                    <ul className="max-h-60 overflow-y-auto">
+                                    {followingNames.map((followedUser) => (
+                                        <li key={followedUser._id} className="py-2 border-b last:border-b-0">
+                                            {followedUser.name}
+                                        </li>
+                                    ))}
+                                    </ul>
+                                    <button 
+                                        onClick={() => setShowFollowing(false)}
+                                        className="mt-4 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
+                                    >
+                                        Close
+                                    </button>
                                 </div>
-                            )}
-
+                            </div>
+                        )}
                             </div>
                         </div>
                         <div className="mt-4 md:mt-0">
