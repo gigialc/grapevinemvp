@@ -7,6 +7,7 @@ import Navbar from "../../components/Navbar";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGraduationCap, faMapMarkerAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
+import { faUserFriends, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
 export default function UserProfile() {
     const { data: session, status } = useSession();
@@ -139,15 +140,33 @@ export default function UserProfile() {
                                 height={96}
                                 className="rounded-full border-4 border-white mb-4 md:mb-0 md:mr-4"
                             />
-                            <div>
+                             <div>
                                 <h1 className="text-2xl font-bold text-black">{user.name}</h1>
                                 <p className="text-black opacity-75 mt-1">{user.bio}</p>
                                 <p className="text-gray-600 flex items-center mt-1">
                                     <FontAwesomeIcon icon={faGraduationCap} className="mr-2 text-purple-600" />
                                     {user.education}
                                 </p>
+                                <div className="flex mt-2 space-x-4">
+                                    <button 
+                                        onClick={() => setShowFollowers(true)}
+                                        className="text-gray-600 flex items-center hover:text-purple-600 transition-colors"
+                                    >
+                                        <FontAwesomeIcon icon={faUserFriends} className="mr-2 text-purple-600" />
+                                        <strong>{user.followers.length}</strong> followers
+                                    </button>
+                                    <button 
+                                        onClick={() => setShowFollowing(true)}
+                                        className="text-gray-600 flex items-center hover:text-purple-600 transition-colors"
+                                    >
+                                        <FontAwesomeIcon icon={faUserFriends} className="mr-2 text-purple-600" />
+                                        <strong>{user.following.length}</strong> following
+                                    </button>
+                                </div>
                             </div>
+
                         </div>
+                        
                         <div className="mt-4 md:mt-0">
                             {isOwnProfile ? (
                                 <Link href="/profile/edit" className="text-purple-600 px-4 py-2 rounded-full hover:bg-purple-100 transition duration-300">
@@ -174,7 +193,10 @@ export default function UserProfile() {
                                 </div>
                             )}
                         </div>
+
                     </div>
+            
+
                     <div className="flex flex-wrap gap-2 mb-4">
                         {user.skills && user.skills.map((skill, index) => (
                             <span key={index} className="bg-purple-100 text-purple-800 rounded-full px-3 py-1 text-sm font-semibold">

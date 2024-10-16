@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -24,6 +24,10 @@ export default function Profile() {
     const [user, setUser] = useState(null);
     const router = useRouter();
     const [projects, setProjects] = useState([]);
+    const [showFollowers, setShowFollowers] = useState(false);
+    const [showFollowing, setShowFollowing] = useState(false);
+    const [followersNames , setFollowersNames] = useState([]);
+    const [followingNames , setFollowingNames] = useState([]);
 
     useEffect(() => {
         if (session?.user?.email) {
@@ -61,8 +65,45 @@ export default function Profile() {
             console.error('Error fetching projects:', error);
         }
     };
-    
 
+
+
+//    const fetchFollowersNames = async () => {
+//         try {
+//             const response = await fetch(`/api/user/${user.followers}/followersNames`,) 
+//             if (response.ok) {
+//                 const followersData = await response.json();
+//                 setFollowersNames(followersData);
+//             } else {
+//                 console.error('Failed to fetch followers data');
+//             }
+//         } catch (error) {
+//             console.error('Error fetching followers data:', error);
+//         }
+//     };
+
+//     const fetchFollowingNames = async () => {
+//         try {
+//             const response = await fetch(`/api/user/${user.following}/followingNames`,) 
+//             if (response.ok) {
+//                 const followingData = await response.json();
+//                 setFollowingNames(followingData);
+//             } else {
+//                 console.error('Failed to fetch following data');
+//             }
+//         } catch (error) {
+//             console.error('Error fetching following data:', error);
+//         }
+//     };
+    
+//     useEffect(() => {
+//         if (user) {
+//             fetchFollowersNames();
+//             fetchFollowingNames();
+//         }
+//     }, [user]);
+
+    
 
     if (status === 'loading' || !user) {
         return <div>Loading...</div>;
@@ -93,7 +134,66 @@ export default function Profile() {
                                     <FontAwesomeIcon icon={faGraduationCap} className="mr-2 text-purple-600" />
                                     {user.education}
                                 </p>
-                              
+
+                                <div className="flex mt-2 space-x-4">
+                                <button 
+                                    onClick={() => setShowFollowers(true)}
+                                    className="text-gray-600 flex items-center hover:text-purple-600 transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faUserFriends} className="mr-2 text-purple-600" />
+                                    <strong>{user.followers.length}</strong> followers
+                                </button>
+                                <button 
+                                    onClick={() => setShowFollowing(true)}
+                                    className="text-gray-600 flex items-center hover:text-purple-600 transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faUserFriends} className="mr-2 text-purple-600" />
+                                    <strong>{user.following.length}</strong> following
+                                </button>
+                            </div>
+
+                            {showFollowers && (
+                                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                    <div className="bg-white p-6 rounded-lg max-w-md w-full">
+                                        <h2 className="text-xl font-bold mb-4">Followers</h2>
+                                        <ul className="max-h-60 overflow-y-auto">
+                                        {user.followers.map((follower) => (
+                                            <li key={follower._id} className="py-2 border-b last:border-b-0">
+                                                {follower.name}
+                                            </li>
+                                        ))}
+                                        </ul>
+                                        <button 
+                                            onClick={() => setShowFollowers(false)}
+                                            className="mt-4 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {showFollowing && (
+                                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                    <div className="bg-white p-6 rounded-lg max-w-md w-full">
+                                        <h2 className="text-xl font-bold mb-4">Following</h2>
+                                        <ul className="max-h-60 overflow-y-auto">
+                                        {user.following.map((followedUser) => (
+                                            <li key={followedUser._id} className="py-2 border-b last:border-b-0">
+                                                {followedUser.name}
+                                            </li>
+                                        ))}
+                                        </ul>
+                                        <button 
+                                            onClick={() => setShowFollowing(false)}
+                                            className="mt-4 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
                             </div>
                         </div>
                         <div className="mt-4 md:mt-0">
@@ -122,56 +222,54 @@ export default function Profile() {
                     </div>
                 </div>
             </div>
-
-            <div className="rounded-lg overflow-hidden my-4 md:my-8 ">
-            <div className="p-4 md:p-6">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold">Projects</h2>
-                    {isOwnProfile && (
-                        <button 
-                            onClick={handleAddProject}
-                            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded text-sm transition duration-300"
-                        >
-                            Add Project
-                        </button>
+    
+            <div className="rounded-lg overflow-hidden my-4 md:my-8">
+                <div className="p-4 md:p-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold">Projects</h2>
+                        {isOwnProfile && (
+                            <button 
+                                onClick={handleAddProject}
+                                className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded text-sm transition duration-300"
+                            >
+                                Add Project
+                            </button>
+                        )}
+                    </div>
+                    {projects.length > 0 ? (
+                        projects.map((project, index) => (
+                            <div key={index} className="mb-6 pb-6 border-b border-gray-200 last:border-b-0">
+                                {project.seekingCollaborators && (
+                                    <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 mb-5 rounded">
+                                        Looking for Collaborators
+                                    </span>
+                                )}
+                                
+                                <h3 className="text-xl font-semibold">{project.title}</h3>
+                                <p className="text-gray-700 mt-2">{project.description}</p>
+                                {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
+                                {project.images && project.images.length > 0 && (
+                                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                        {project.images.map((image, imageIndex) => (
+                                            <div key={imageIndex} className="relative">
+                                                <Image 
+                                                    src={image}
+                                                    alt={`Project image ${imageIndex + 1}`} 
+                                                    width={200} 
+                                                    height={200} 
+                                                    className="rounded-md object-cover w-full h-auto"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <p>No projects found.</p>
                     )}
                 </div>
-                {projects.length > 0 ? (
-                    projects.map((project, index) => (
-                        <div key={index} className="mb-6 pb-6 border-b border-gray-200 last:border-b-0">
-                            {project.seekingCollaborators && (
-                                <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 mb-5 rounded">
-                                    Looking for Collaborators
-                                </span>
-                            )}
-                            
-                            <h3 className="text-xl font-semibold">{project.title}</h3>
-                            <p className="text-gray-700 mt-2">{project.description}</p>
-                            {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800 mt-2 inline-block">View Project</a>}
-                            {project.images && project.images.length > 0 && (
-                                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                    {project.images.map((image, imageIndex) => (
-                                        <div key={imageIndex} className="relative">
-                                            <Image 
-                                                src={image}
-                                                alt={`Project image ${imageIndex + 1}`} 
-                                                width={200} 
-                                                height={200} 
-                                                className="rounded-md object-cover w-full h-auto"
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    ))
-                ) : (
-                    <p>No projects found.</p>
-                )}
             </div>
-        </div>
-    </main>
-
-
+        </main>
     );
 }
