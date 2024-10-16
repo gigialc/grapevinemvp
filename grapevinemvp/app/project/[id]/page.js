@@ -1,109 +1,215 @@
 'use client'
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-
 export default function ProjectPage() {
     const params = useParams();
+    const { data: session } = useSession();
     const [project, setProject] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { data: session } = useSession()
-    const [users, setUsers] = useState([])
-    const [creatorId, setCreatorId] = useState(null)
+    const [collaborationRequests, setCollaborationRequests] = useState([]);
+    const [isOwner, setIsOwner] = useState(false);
+    const [creatorId, setCreatorId] = useState(null);
+    const [hasRequested, setHasRequested] = useState(false); // Track if the user already requested collaboration
     const router = useRouter();
 
-  useEffect(() => {
-    const fetchProject = async () => {
-      if (!params.id) return;
+    useEffect(() => {
+        const fetchProject = async () => {
+            if (!params.id) return;
 
-      setIsLoading(true);
-      try {
-        const response = await fetch(`/api/projects/${params.id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch project');
+            setIsLoading(true);
+            try {
+                const response = await fetch(`/api/projects/${params.id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch project');
+                }
+                const data = await response.json();
+                setProject(data);
+                setCreatorId(data.createdBy); // Ensure this is set correctly
+            } catch (error) {
+                console.error('Error fetching project:', error);
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchProject();
+    }, [params.id]);
+
+    useEffect(() => {
+        const fetchCollaborationRequests = async () => {
+            if (!params.id) return;
+
+            try {
+                const response = await fetch(`/api/collaboration-requests?projectId=${params.id}`);
+                const data = await response.json();
+                setCollaborationRequests(data);
+            } catch (error) {
+                console.error('Error fetching collaboration requests:', error);
+            }
+        };
+
+        const checkIfOwner = () => {
+            if (project && session?.user?.id === project.createdBy) {
+                setIsOwner(true);
+            }
+        };
+
+        fetchCollaborationRequests();
+        checkIfOwner();
+    }, [params.id, session, project]);
+
+    const handleAction = async (requestId, action) => {
+        try {
+            const response = await fetch(`/api/collaboration-requests`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ requestId, status: action }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setCollaborationRequests(prev =>
+                    prev.map(req => (req._id === requestId ? { ...req, status: action } : req))
+                );
+            } else {
+                console.error('Error updating collaboration request:', data.error);
+            }
+        } catch (error) {
+            console.error('Error updating collaboration request:', error);
         }
-        const data = await response.json();
-        setProject(data);
-        setCreatorId(data.createdBy); // Ensure this is set correctly
-      } catch (error) {
-        console.error('Error fetching project:', error);
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
     };
-    fetchProject();
-  }, [params.id]);
 
+    const handleCollaborationRequest = async () => {
+        try {
+            const requestBody = {
+                requester: session?.user?.id,
+                project: project?._id, // Ensure project._id is defined
+                requestedUser: project?.createdBy, // Ensure createdBy is defined
+            };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+            // Log the request body for debugging
+            console.log('Sending collaboration request with payload:', requestBody);
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+            const response = await fetch('/api/collaboration-requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody),
+            });
 
-  if (!project) {
-    return <div>Project not found</div>;
-  }
+            // Log the response status and body for debugging
+            console.log('Collaboration request response status:', response.status);
+            const responseData = await response.json();
+            console.log('Collaboration request response data:', responseData);
 
-  
-  return (
-    <div className="min-h-screen bg-gray-100">
-        <Navbar />
-        <div className="max-w-4xl mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-4">{project.title}</h1>
-            <a href={`/live`} className="ml-2 bg-red-500 rounded-full w-6 h-6 flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-red-600 transition duration-300 ring-2 ring-black"></a>
-            <p className="text-lg text-gray-600 mb-4 mt-4">by {creatorId.name}</p>
+            if (response.ok) {
+                setHasRequested(true);
+            } else {
+                console.error('Failed to send collaboration request:', responseData);
+            }
+        } catch (error) {
+            console.error('Error sending collaboration request:', error);
+        }
+    };
 
-            {project.seekingCollaborators && (
-                <div className="mt-6 bg-purple-100 p-4 rounded-lg">
-                    <h2 className="text-xl font-semibold mb-2">Looking for Collaborators</h2>
-                    <p>{project.collaborationDetails}</p>
-                    {/* <button 
-                        className="mt-4 bg-purple-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
-                        onClick={handleContactClick}
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
+    if (!project) {
+        return <div>Project not found</div>;
+    }
+
+    return (
+        <div className="min-h-screen bg-gray-100">
+            <Navbar />
+            <div className="max-w-4xl mx-auto px-4 py-8">
+                <h1 className="text-3xl font-bold mb-4">{project.title}</h1>
+                <p className="text-lg text-gray-600 mb-4 mt-4">by {creatorId.name}</p>
+
+                {project.seekingCollaborators && (
+                    <div className="mt-6 bg-purple-100 p-4 rounded-lg">
+                        <h2 className="text-xl font-semibold mb-2">Looking for Collaborators</h2>
+                        <p>{project.collaborationDetails}</p>
+                    </div>
+                )}
+
+                {project.images && project.images.length > 0 && (
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {project.images.map((image, imageIndex) => (
+                            <div key={imageIndex} className="relative">
+                                <Image
+                                    src={image}
+                                    alt={`Project image ${imageIndex + 1}`}
+                                    width={200}
+                                    height={200}
+                                    className="rounded-md object-cover w-full h-auto"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                <p className="text-lg mb-6 mt-10">{project.description}</p>
+
+                {project.link && (
+                    <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-purple-600 hover:text-purple-800"
                     >
+                        Project Link
+                    </a>
+                )}
 
-                        Contact
-                    </button> */}
-                </div>
-            )}
+                {/* Show collaboration requests if the user is the owner */}
+                {isOwner && (
+                    <div className="mt-6 bg-purple-100 p-4 rounded-lg">
+                        <h2 className="text-xl font-semibold mb-2">Collaboration Requests</h2>
+                        {collaborationRequests.map((request) => (
+                            <div key={request._id} className="mb-4">
+                                <p>{request.requester.name} is requesting to collaborate.</p>
+                                <button
+                                    className="bg-green-500 text-white px-4 py-2 mr-2 rounded"
+                                    onClick={() => handleAction(request._id, 'accepted')}
+                                >
+                                    Accept
+                                </button>
+                                <button
+                                    className="bg-red-500 text-white px-4 py-2 rounded"
+                                    onClick={() => handleAction(request._id, 'rejected')}
+                                >
+                                    Reject
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
-        {project.images && project.images.length > 0 && (
-                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {project.images.map((image, imageIndex) => (
-                                <div key={imageIndex} className="relative">
-                                    <Image 
-                                        src={image}
-                                        alt={`Project image ${imageIndex + 1}`} 
-                                        width={200} 
-                                        height={200} 
-                                        className="rounded-md object-cover w-full h-auto"
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    )}
-        <p className="text-lg mb-6 mt-10">{project.description}</p>
-        {project.link && (
-          <a
-            href={project.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-purple-600 hover:text-purple-800"
-          >
-            Project Link
-          </a>
-        )}
-      </div>
-    </div>
-  );
+                {/* Show request collaboration button if the user is not the owner */}
+                {!isOwner && !hasRequested && (
+                    <button
+                        className="mt-4 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
+                        onClick={handleCollaborationRequest}
+                    >
+                        Request Collaboration
+                    </button>
+                )}
+
+                {hasRequested && (
+                    <p className="mt-4 text-green-600">Collaboration request sent!</p>
+                )}
+            </div>
+        </div>
+    );
 }
