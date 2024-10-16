@@ -8,5 +8,4 @@ const collaborationRequestSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-const CollaborationRequest = mongoose.model('CollaborationRequest', collaborationRequestSchema);
-module.exports = CollaborationRequest;
+export default mongoose.models.CollaborationRequest || mongoose.model('CollaborationRequest', collaborationRequestSchema);
