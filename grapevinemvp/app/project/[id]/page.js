@@ -6,6 +6,7 @@ import Navbar from '../../components/Navbar';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function ProjectPage() {
     const params = useParams();
@@ -130,86 +131,109 @@ export default function ProjectPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <Navbar />
-            <div className="max-w-4xl mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold mb-4">{project.title}</h1>
-                <p className="text-lg text-gray-600 mb-4 mt-4">by {creatorId.name}</p>
+      <div className="min-h-screen bg-gray-100">
+          <Navbar />
+          <div className="max-w-4xl mx-auto px-4 py-8">
+              <div className="rounded-lg overflow-hidden">
+                  <div className="p-6">
+                      <h1 className="text-3xl font-bold mb-2">{project.title}</h1>
+                      <p className="text-lg text-gray-600 mb-4">by {creatorId.name}</p>
+                      
+                      {project.images && project.images.length > 0 && (
+                          <div className="mb-6">
+                              <Image
+                                  src={project.images[0]}
+                                  alt="Project main image"
+                                  width={800}
+                                  height={400}
+                                  className="rounded-lg object-cover w-full"
+                              />
+                          </div>
+                      )}
 
-                {project.seekingCollaborators && (
-                    <div className="mt-6 bg-purple-100 p-4 rounded-lg">
-                        <h2 className="text-xl font-semibold mb-2">Looking for Collaborators</h2>
-                        <p>{project.collaborationDetails}</p>
-                    </div>
-                )}
+                      <div className="prose max-w-none mb-6">
+                          <h2 className="text-xl font-semibold mb-2">Project Description</h2>
+                          <p>{project.description}</p>
+                      </div>
 
-                {project.images && project.images.length > 0 && (
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {project.images.map((image, imageIndex) => (
-                            <div key={imageIndex} className="relative">
-                                <Image
-                                    src={image}
-                                    alt={`Project image ${imageIndex + 1}`}
-                                    width={200}
-                                    height={200}
-                                    className="rounded-md object-cover w-full h-auto"
-                                />
-                            </div>
-                        ))}
-                    </div>
-                )}
+                      {project.link && (
+                          <div className="mb-6">
+                              <h2 className="text-xl font-semibold mb-2">Project Link</h2>
+                              <a
+                                  href={project.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-purple-600 hover:text-purple-800"
+                              >
+                                  View Project
+                              </a>
+                          </div>
+                      )}
 
-                <p className="text-lg mb-6 mt-10">{project.description}</p>
+                      {project.seekingCollaborators && (
+                          <div className="mb-6 bg-purple-100 p-4 rounded-lg">
+                              <h2 className="text-xl font-semibold mb-2">Collaboration Opportunity</h2>
+                              <p>{project.collaborationDetails}</p>
+                              {!isOwner && !hasRequested && (
+                                  <button
+                                      className="mt-4 bg-purple-500 text-white font-semibold py-2 px-4 rounded hover:bg-purple-600 transition duration-300"
+                                      onClick={handleCollaborationRequest}
+                                  >
+                                      Contact
+                                  </button>
+                              )}
+                              {hasRequested && (
+                                  <p className="mt-4 text-green-600">Collaboration request sent!</p>
+                              )}
+                          </div>
+                      )}
 
-                {project.link && (
-                    <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-purple-600 hover:text-purple-800"
-                    >
-                        Project Link
-                    </a>
-                )}
+                      {isOwner && collaborationRequests.length > 0 && (
+                          <div className="mb-6">
+                              <h2 className="text-xl font-semibold mb-2">Collaboration Requests</h2>
+                              {collaborationRequests.map((request) => (
+                                  <div key={request._id} className="bg-gray-100 p-4 rounded-lg mb-2">
+                                      <p className="mb-2">{request.requester.name} is requesting to collaborate.</p>
+                                      <div className="flex space-x-2">
+                                          <button
+                                              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                                              onClick={() => handleAction(request._id, 'accepted')}
+                                          >
+                                              Accept
+                                          </button>
+                                          <button
+                                              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                                              onClick={() => handleAction(request._id, 'rejected')}
+                                          >
+                                              Reject
+                                          </button>
+                                      </div>
+                                  </div>
+                              ))}
+                          </div>
+                      )}
 
-                {/* Show collaboration requests if the user is the owner */}
-                {isOwner && (
-                    <div className="mt-6 bg-purple-100 p-4 rounded-lg">
-                        <h2 className="text-xl font-semibold mb-2">Collaboration Requests</h2>
-                        {collaborationRequests.map((request) => (
-                            <div key={request._id} className="mb-4">
-                                <p>{request.requester.name} is requesting to collaborate.</p>
-                                <button
-                                    className="bg-green-500 text-white px-4 py-2 mr-2 rounded"
-                                    onClick={() => handleAction(request._id, 'accepted')}
-                                >
-                                    Accept
-                                </button>
-                                <button
-                                    className="bg-red-500 text-white px-4 py-2 rounded"
-                                    onClick={() => handleAction(request._id, 'rejected')}
-                                >
-                                    Reject
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {/* Show request collaboration button if the user is not the owner */}
-                {!isOwner && !hasRequested && (
-                    <button
-                        className="mt-4 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
-                        onClick={handleCollaborationRequest}
-                    >
-                        Request Collaboration
-                    </button>
-                )}
-
-                {hasRequested && (
-                    <p className="mt-4 text-green-600">Collaboration request sent!</p>
-                )}
-            </div>
-        </div>
-    );
+                      {project.images && project.images.length > 1 && (
+                          <div className="mb-6">
+                              <h2 className="text-xl font-semibold mb-2">Project Gallery</h2>
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                  {project.images.slice(1).map((image, index) => (
+                                      <div key={index} className="relative">
+                                          <Image
+                                              src={image}
+                                              alt={`Project image ${index + 2}`}
+                                              width={200}
+                                              height={200}
+                                              className="rounded-md object-cover w-full h-48"
+                                          />
+                                      </div>
+                                  ))}
+                              </div>
+                          </div>
+                      )}
+                  </div>
+              </div>
+          </div>
+      </div>
+  );
 }

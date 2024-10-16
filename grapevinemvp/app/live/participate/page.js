@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import MonacoEditor from '@/app/components/MonacoEditor';
 import LiveChat from '@/app/components/LiveChat';
 import Timer from '@/app/components/Timer';
-import Leaderboard from '@/app/components/Leaderboard';
+// import Leaderboard from '@/app/components/Leaderboard';
 
 const Participate = () => {
     const [timeLeft, setTimeLeft] = useState(7200); // 2 hours in seconds
