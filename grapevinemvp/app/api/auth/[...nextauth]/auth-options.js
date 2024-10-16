@@ -24,6 +24,7 @@ export const authOptions = {
       }
     })
   ],
+  debug: true,
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
