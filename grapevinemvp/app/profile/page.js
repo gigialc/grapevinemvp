@@ -14,7 +14,9 @@ import {
   faGraduationCap, 
   faProjectDiagram, 
   faPlus,
-  faMapMarkerAlt 
+  faMapMarkerAlt,
+  faUserFriends,
+  faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 
 export default function Profile() {
