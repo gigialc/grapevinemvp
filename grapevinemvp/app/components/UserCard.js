@@ -42,7 +42,13 @@ const UserCard = ({ user }) => {
         
         <div>
           <h3 className="text-sm font-semibold text-gray-700 mb-1">Skills</h3>
-          <p className="text-sm text-gray-600">{user.skills.join(', ')}</p>
+          <div className="flex flex-wrap gap-1">
+            {user.skills.map((skill, index) => (
+              <span key={index} className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </Link>
