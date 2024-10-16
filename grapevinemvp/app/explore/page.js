@@ -97,11 +97,11 @@ const ExplorePage = () => {
                 className="w-full px-6 py-1.5 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 shadow-sm text-lg"
             />
             </div>
-          <BubbleFilter
+          {/* <BubbleFilter
             skills={allSkills.slice(0, MAX_SKILLS_DISPLAYED)}
             selectedSkills={selectedSkills}
             onSkillToggle={handleSkillToggle}
-          />
+          /> */}
         </div>
         <div className="user-grid columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
           {filteredUsers.map(user => (

@@ -105,23 +105,36 @@ export default function Profile() {
         <main className="mx-auto px-4 min-h-screen">
             <Navbar />
             <div className="rounded-lg overflow-hidden my-4 md:my-8 shadow-md bg-white">
-                <div className="p-4 md:p-6">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                        <div className="flex flex-col md:flex-row md:items-center">
-                            <img 
-                                src={user.profileImage || '/images/default-avatar.png'}
-                                alt={user.name} 
-                                className="w-24 h-24 rounded-full border-4 border-white mb-4 md:mb-0 md:mr-4"
-                            />
-                            <div>
-                                <h1 className="text-2xl font-bold text-black">{user.name}</h1>
-                                <p className="text-black opacity-75 mt-1">{user.bio}</p>
-                                <p className="text-gray-600 flex items-center mt-1">
-                                    <FontAwesomeIcon icon={faGraduationCap} className="mr-2 text-purple-600" />
-                                    {user.education}
-                                </p>
-
-                                <div className="flex mt-2 space-x-4">
+            <div className="p-4 md:p-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                    <div className="flex flex-col md:flex-row md:items-center">
+                        <Image 
+                            src={user.profileImage || '/images/default-avatar.png'}
+                            alt={user.name} 
+                            width={96}
+                            height={96}
+                            className="rounded-full border-4 border-white mb-4 md:mb-0 md:mr-4"
+                        />
+                        <div>
+                            <h1 className="text-2xl font-bold text-black">{user.name}</h1>
+                            <p className="text-black opacity-75 mt-1">{user.bio}</p>
+                            <p className="text-gray-600 flex items-center mt-1">
+                                <FontAwesomeIcon icon={faGraduationCap} className="mr-2 text-purple-600" />
+                                {user.education}
+                            </p>
+                            {user.interests && user.interests.length > 0 && (
+                                <div className="mt-2">
+                                    <h3 className="text-sm font-semibold text-gray-700">Interests</h3>
+                                    <div className="flex flex-wrap gap-2 mt-1">
+                                        {user.interests.map((interest, index) => (
+                                            <span key={index} className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                                {interest}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            <div className="flex mt-2 space-x-4">
                                 <button 
                                     onClick={() => setShowFollowers(true)}
                                     className="text-gray-600 flex items-center hover:text-purple-600 transition-colors"
@@ -137,6 +150,7 @@ export default function Profile() {
                                     <strong>{user.following.length}</strong> following
                                 </button>
                             </div>
+                        
 
                             {showFollowers && (
                             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

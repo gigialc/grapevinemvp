@@ -132,13 +132,14 @@ export default function SignUp() {
             Connect and collaborate on passion projects
           </p>
         </div>
+        <div className="space-y-6">
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" value="true" />
           {step === 1 ? (
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
                 <label htmlFor="name" className="sr-only">
-                  Name
+                Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="name"
@@ -187,33 +188,44 @@ export default function SignUp() {
           ) : (
             <div className="space-y-4">
               <div>
-                <div>
-                  <label
-                    htmlFor="profileImage"
-                    className="block text-sm font-medium text-purple-700"
-                  >
-                    Profile Image
-                  </label>
-                  <input
-                    type="file"
-                    id="profileImage"
-                    onChange={handleImageUpload}
-                    className="mt-1 block w-full text-sm text-gray-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-purple-50 file:text-purple-700
-                    hover:file:bg-purple-100"
-                  />
-                </div>
-              </div>
-              <div>
                 <label
-                  htmlFor="bio"
+                  htmlFor="profileImage"
                   className="block text-sm font-medium text-purple-700"
                 >
-                  Bio
+                  Profile Image
                 </label>
+                <input
+                  type="file"
+                  id="profileImage"
+                  onChange={handleImageUpload}
+                  className="mt-1 block w-full text-sm text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-purple-50 file:text-purple-700
+                  hover:file:bg-purple-100"
+                />
+                {profileImage && ( // Display image preview if available
+                  <div className="mt-2">
+                    <img
+                      src={profileImage}
+                      alt="Profile Preview"
+                      className="w-32 h-32 object-cover rounded-full border-2 border-purple-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setProfileImage("")} // Clear the image
+                      className="ml-4 text-red-600 hover:text-red-800"
+                    >
+                      Remove Image
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div>
+              <label htmlFor="name" className="block text-sm font-medium text-purple-700">
+                Bio <span className="text-red-500">*</span>
+              </label>
                 <textarea
                   id="bio"
                   name="bio"
@@ -226,21 +238,18 @@ export default function SignUp() {
                 ></textarea>
               </div>
               <div>
-                <label
-                  htmlFor="projectInterest"
-                  className="block text-sm font-medium text-purple-700"
-                >
-                  Project Interest
-                </label>
-                <input
+              <label className="block text-sm font-medium text-purple-700">
+                Project Interest <span className="text-red-500">*</span>
+              </label>
+                <textarea
                   type="text"
-                  id="projectInterest"
-                  name="projectInterest"
+                  id="interests"
+                  name="interests"
                   required
                   className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
                   placeholder="What projects are you interested in?"
-                  value={projectInterest}
-                  onChange={(e) => setProjectInterest(e.target.value)}
+                  value={interests}
+                  onChange={(e) => setInterests(e.target.value)}
                 />
               </div>
               <div>
@@ -260,7 +269,7 @@ export default function SignUp() {
                   onChange={(e) => setEducation(e.target.value)}
                 />
               </div>
-              <div>
+              {/* <div>
                 <label
                   htmlFor="website"
                   className="block text-sm font-medium text-purple-700"
@@ -276,32 +285,41 @@ export default function SignUp() {
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                 />
-              </div>
+              </div> */}
               <div>
-                <label className="block text-sm font-medium text-purple-700">
-                  Skills
-                </label>
-                {skills.map((skill, index) => (
+              <label className="block text-sm font-medium text-purple-700">
+                Skills <span className="text-red-500">*</span>
+              </label>
+              {skills.map((skill, index) => (
+                <div key={index} className="flex items-center mt-1">
                   <input
-                    key={index}
                     type="text"
                     required
-                    className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                    className="block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
                     placeholder="Enter a skill"
                     value={skill}
-                    onChange={(e) =>
-                      updateField(setSkills, skills, index, e.target.value)
-                    }
+                    onChange={(e) => updateField(setSkills, skills, index, e.target.value)}
                   />
-                ))}
-                <button
-                  type="button"
-                  onClick={() => addField(setSkills, skills)}
-                  className="mt-2 text-sm text-purple-600"
-                >
-                  Add Skill
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newSkills = skills.filter((_, i) => i !== index);
+                      setSkills(newSkills);
+                    }}
+                    className="ml-1 text-red-600 hover:text-red-800"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => addField(setSkills, skills)}
+                className="mt-2 text-sm text-purple-600 hover:text-purple-800"
+              >
+                + Add Skill
+              </button>
+            </div>
               <div>
                 <label className="block text-sm font-medium text-purple-700">
                   Social Links
@@ -310,7 +328,6 @@ export default function SignUp() {
                   type="url"
                   placeholder="LinkedIn"
                   value={socialLinks.linkedin}
-           
                   onChange={(e) =>
                     setSocialLinks({ ...socialLinks, linkedin: e.target.value })
                   }
@@ -333,7 +350,7 @@ export default function SignUp() {
                   className="mt-1 block w-full rounded-md border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
                 /> */}
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-purple-700">
                   Interests
                 </label>
@@ -362,7 +379,7 @@ export default function SignUp() {
                 >
                   Add Interest
                 </button>
-              </div>
+              </div> */}
 
               <div>
                 {/* <label className="block text-sm font-medium text-purple-700">
@@ -427,6 +444,7 @@ export default function SignUp() {
             </button>
           </div>
         </form>
+        </div>
         {step === 1 && (
           <div className="text-center">
             <p className="mt-2 text-sm text-purple-600">
