@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Grapevine 🍇
+
+Grapevine is a platform designed to connect passionate developers, designers, and creators to collaborate on projects. It allows users to showcase their work, discover interesting projects, and find collaborators for their own initiatives.
+
+## Features
+
+- **User Authentication**: Secure login and signup system
+- **Project Showcase**: Upload and display your projects with images and descriptions
+- **Explore Projects**: Discover projects from other users with search and filtering capabilities
+- **Collaboration**: Connect with other users to collaborate on projects
+- **Profile Management**: Customize your profile to showcase your skills and interests
+- **Real-time Interaction**: Live collaboration features
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, React 18, Tailwind CSS
+- **Backend**: Next.js API routes
+- **Database**: MongoDB with Mongoose
+- **Authentication**: NextAuth.js
+- **UI Components**: Radix UI, Chakra UI, Material UI
+- **Styling**: Tailwind CSS, Emotion
+- **Image Handling**: Cloudinary
+- **Icons**: FontAwesome, React Icons
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js (v16 or newer)
+- npm or yarn
+- MongoDB instance
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/grapevine.git
+   cd grapevine
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-## Learn More
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory with the following variables:
+   ```
+   MONGODB_URI=your_mongodb_connection_string
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your_nextauth_secret
+   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+   CLOUDINARY_API_KEY=your_cloudinary_api_key
+   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+- `/app`: Main application routes and components
+  - `/components`: Reusable UI components
+  - `/api`: API routes for backend functionality
+  - `/login`, `/signup`: Authentication pages
+  - `/exploreProjects`: Project discovery
+  - `/project`: Individual project viewing
+  - `/add-project`: Project creation
+  - `/profile`: User profile management
+- `/models`: MongoDB schemas and models
+- `/lib`: Utility functions and helpers
+- `/public`: Static assets
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The application can be deployed using Vercel:
+
+1. Push your code to a GitHub repository
+2. Connect your repository to Vercel
+3. Configure environment variables in Vercel
+4. Deploy
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Next.js team for the amazing framework
+- MongoDB team for the powerful database
+- All contributors and users of the platform
