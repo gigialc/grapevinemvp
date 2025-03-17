@@ -11,6 +11,22 @@ Grapevine is a platform designed to connect passionate developers, designers, an
 - **Profile Management**: Customize your profile to showcase your skills and interests
 - **Real-time Interaction**: Live collaboration features
 
+## UI Screenshots
+
+### Login Page
+![Login Page](/public/screenshots/login.png)
+
+### Project Explorer
+![Project Explorer](/public/screenshots/explorer.png)
+
+### Project Details
+![Project Details](/public/screenshots/project-details.png)
+
+### Profile Page
+![Profile Page](/public/screenshots/profile.png)
+
+> Note: To add your own screenshots, capture images of the application UI and save them to the `/public/screenshots/` directory, then update the paths in this README.
+
 ## Tech Stack
 
 - **Frontend**: Next.js 14, React 18, Tailwind CSS
