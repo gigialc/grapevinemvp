@@ -30,7 +30,7 @@ export default function SignUp() {
     },
   ]);
   const [projectInterest, setProjectInterest] = useState("");
-  const [interests, setInterests] = useState([""]);
+  const [interests, setInterests] = useState("");
   const [showDropdown, setShowDropdown] = useState(false); // State to manage dropdown visibility
   const [tags, setTags] = useState([]); // State to manage selected tags
   const availableTags = ["MEC (MIT)", "DivHacks (Columbia)"]; // Example tags for the dropdown
@@ -81,7 +81,7 @@ export default function SignUp() {
         skills: skills.filter((skill) => skill.trim() !== ""),
         education,
         socialLinks,
-        interests: interests.filter((interest) => interest.trim() !== ""),
+        interests: typeof interests === 'string' ? [interests] : interests.filter((interest) => interest.trim() !== ""),
         // events: tags, // Use the selected tags as events
       };
 

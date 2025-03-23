@@ -1,6 +1,7 @@
 import Credentials from 'next-auth/providers/credentials';
 import { connectDB } from './mongodb';
-import UserModel from './models/UserModel';
+import User from './models/User';
+import { compare } from 'bcryptjs';
 
 export const authConfig = {
   pages: {
@@ -20,10 +21,10 @@ export const authConfig = {
           return null;
         }
 
-        const user = await UserModel.authenticate(credentials.email, credentials.password);
-
-        if (user) {
-          return { id: user._id, email: user.email, name: user.name };
+        const user = await User.findOne({ email: credentials.email });
+        
+        if (user && await compare(credentials.password, user.password)) {
+          return { id: user._id.toString(), email: user.email, name: user.name };
         } else {
           return null;
         }
