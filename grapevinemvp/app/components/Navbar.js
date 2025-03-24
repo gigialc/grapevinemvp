@@ -18,7 +18,7 @@ const Navbar = () => {
     <div className="container mx-auto flex justify-between items-center">
       <div className="flex-1">
         <Link href="/explore" className="text-2xl font-bold">
-          Grapevine 
+          WXI
         </Link>
       </div>
         
